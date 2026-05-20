@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>UTA NP Pathophysiology Practice Quiz: Chapters 1 & 6</title>
+<style>
+  :root{
+    --bg:#f7f7fb; --card:#ffffff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+    --accent:#0f766e; --accent-dark:#115e59; --good:#047857; --bad:#b91c1c; --warn:#92400e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
+  header{background:linear-gradient(135deg,#0f766e,#164e63);color:white;padding:28px 18px}
+  .wrap{max-width:980px;margin:0 auto}
+  h1{font-size:1.65rem;margin:0 0 8px}
+  h2{font-size:1.25rem;margin:28px 0 12px}
+  h3{font-size:1.05rem;margin:16px 0 8px}
+  p{margin:8px 0}
+  .sub{opacity:.92;font-size:.98rem}
+  .toolbar{position:sticky;top:0;z-index:5;background:rgba(247,247,251,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:10px 14px}
+  .toolbar .inner{max-width:980px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .btn{border:0;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer;background:var(--accent);color:white;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .btn:hover{background:var(--accent-dark)}
+  .btn.secondary{background:#e5e7eb;color:#111827}
+  .btn.secondary:hover{background:#d1d5db}
+  .btn.danger{background:#991b1b}
+  .btn.danger:hover{background:#7f1d1d}
+  .scorebox{font-weight:800;color:#0f766e}
+  main{padding:18px}
+  .intro,.section-card,.question,.key-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 2px 8px rgba(17,24,39,.04)}
+  .notice{border-left:5px solid var(--warn);padding-left:12px;color:#3f2d10;background:#fff7ed;border-radius:10px;padding-top:8px;padding-bottom:8px}
+  .qhead{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
+  .qnum{font-weight:900;color:#111827}
+  .tag{font-size:.75rem;font-weight:800;color:#0f766e;background:#ccfbf1;border-radius:999px;padding:4px 9px;white-space:nowrap}
+  fieldset{border:0;margin:12px 0 0;padding:0;display:grid;gap:8px}
+  label.option{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:14px;padding:11px;cursor:pointer;background:#fff}
+  label.option:hover{border-color:#99f6e4;background:#f0fdfa}
+  input[type="radio"]{margin-top:3px;min-width:18px;min-height:18px}
+  .feedback{display:none;margin-top:12px;border-radius:14px;padding:12px;border:1px solid var(--line);background:#f9fafb}
+  .feedback.correct{border-color:#86efac;background:#f0fdf4;color:#064e3b}
+  .feedback.incorrect{border-color:#fecaca;background:#fef2f2;color:#7f1d1d}
+  .rationale{color:#374151;margin-top:6px}
+  .muted{color:var(--muted);font-size:.92rem}
+  .answer-pill{display:inline-block;font-weight:900;border-radius:999px;padding:2px 8px;margin-right:6px;background:#e0f2fe;color:#075985}
+  .progress{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden;width:220px;max-width:100%}
+  .bar{height:100%;width:0;background:#0f766e;transition:width .25s ease}
+  details{background:#f9fafb;border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:14px}
+  summary{cursor:pointer;font-weight:800}
+  .key-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;margin-top:10px}
+  .key-item{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center;font-weight:800}
+  footer{padding:26px 18px;color:#6b7280;text-align:center;font-size:.9rem}
+  .hidden{display:none}
+  @media print{
+    .toolbar,.btn{display:none!important}
+    body{background:white}
+    .question,.intro,.section-card,.key-card{box-shadow:none;break-inside:avoid}
+    .feedback{display:block!important}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>UTA NP Pathophysiology Practice Quiz</h1>
+    <p class="sub">Applied Pathophysiology for the Advanced Practice Nurse, 2nd ed. — Chapter 1 Cellular Function + Chapter 6 Fluid, Electrolyte, and Acid–Base Homeostasis</p>
+    <p class="sub">Original practice test. Not an official UTA exam, not a publisher test bank, and not copied from course materials.</p>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="inner">
+    <div>
+      <button class="btn" onclick="gradeQuiz()">Submit / Show Rationales</button>
+      <button class="btn secondary" onclick="showAllRationales()">Study Mode</button>
+      <button class="btn secondary" onclick="window.print()">Print</button>
+      <button class="btn danger" onclick="resetQuiz()">Reset</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <div class="progress" aria-label="progress"><div class="bar" id="bar"></div></div>
+      <div class="scorebox" id="scorebox">0 / 50 answered</div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section class="intro">
+    <h2>How to use this</h2>
+    <p>This quiz is built for graduate NP-level reasoning: mechanism → clinical pattern → lab interpretation → likely pathophysiologic process. It is intentionally harder than basic nursing recall.</p>
+    <p class="notice"><strong>Do not use this as a shortcut.</strong> If Emma only memorizes these answers, she is wasting time. The real gain is reading every rationale and explaining why the wrong options are wrong.</p>
+    <p class="muted">Recommended flow: take closed-book once, review rationales, then retake 24 hours later. Target score before moving on: 85%+ with explanations understood.</p>
+  </section>
+
+  <section class="section-card">
+    <h2>Test Blueprint</h2>
+    <p><strong>Chapter 1: Cellular Function</strong> — cellular injury, adaptation, membrane transport, mitochondria/ATP, apoptosis vs necrosis, oxidative stress, genetics/genomics, and neoplastic transformation.</p>
+    <p><strong>Chapter 6: Fluid, Electrolyte, and Acid–Base Homeostasis</strong> — tonicity, volume regulation, ADH/RAAS, sodium, potassium, calcium/magnesium/phosphate, ABG interpretation, compensation, and common clinical syndromes.</p>
+  </section>
+
+  <form id="quiz"></form>
+
+  <section class="key-card" id="answerKeyCard">
+    <h2>Answer Key</h2>
+    <p class="muted">Use this after attempting the quiz. Full rationales appear under each question after submission or Study Mode.</p>
+    <div class="key-grid" id="answerKey"></div>
+  </section>
+</main>
+
+<footer>
+  Built as an original educational study tool for NP pathophysiology review. Verify course-specific objectives, professor blueprint, and assigned readings before an actual UTA exam.
+</footer>
+
+<script>
+const questions = [
+  {
+    "chapter": "Chapter 1",
+    "topic": "Cell injury / ATP depletion",
+    "stem": "A patient has prolonged hypotension from sepsis. Renal tubular cells begin to swell early in the injury process. Which mechanism best explains the swelling?",
+    "options": [
+      "Increased telomerase activity causing uncontrolled mitosis",
+      "Failure of Na+/K+-ATPase causing intracellular sodium and water accumulation",
+      "Activation of caspases causing apoptotic body formation",
+      "Excess collagen deposition in the interstitial space"
+    ],
+    "answer": 1,
+    "rationale": "ATP depletion impairs energy-dependent ion pumps. Sodium accumulates inside the cell, water follows osmotically, and cellular swelling occurs. This is an early, potentially reversible injury pattern."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Mitochondria",
+    "stem": "In ischemic cell injury, mitochondrial dysfunction most directly causes which downstream problem?",
+    "options": [
+      "Increased synthesis of mature mRNA in the nucleus",
+      "Decreased permeability of the plasma membrane to water",
+      "Decreased oxidative phosphorylation and ATP production",
+      "Immediate conversion of all injury into apoptosis"
+    ],
+    "answer": 2,
+    "rationale": "Mitochondria generate ATP through oxidative phosphorylation. When oxygen delivery is impaired, ATP production falls, which disrupts ion pumps, cellular metabolism, and membrane integrity."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Reperfusion injury",
+    "stem": "A patient with an acute coronary occlusion receives successful reperfusion therapy. The clinician explains that some cell injury can paradoxically worsen immediately after blood flow returns. Which mechanism is most responsible?",
+    "options": [
+      "Permanent inhibition of mitochondrial permeability transition",
+      "Immediate restoration of normal ATP in all injured cells",
+      "Decreased leukocyte activation and reduced inflammation",
+      "Reactive oxygen species generation and calcium influx"
+    ],
+    "answer": 3,
+    "rationale": "Reperfusion can increase reactive oxygen species, calcium influx, and inflammatory mediator delivery. These processes may worsen damage in vulnerable cells even while restoring tissue perfusion."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Apoptosis vs necrosis",
+    "stem": "Which finding best fits apoptosis rather than necrosis?",
+    "options": [
+      "Random traumatic cell death after severe tissue disruption",
+      "Leakage of lysosomal enzymes into surrounding tissue",
+      "Cell swelling with membrane rupture and intense inflammation",
+      "Programmed cell death with cell shrinkage and minimal inflammation"
+    ],
+    "answer": 3,
+    "rationale": "Apoptosis is regulated, energy-dependent cell death. The cell shrinks, fragments into apoptotic bodies, and is cleared with limited inflammation. Necrosis is more chaotic and inflammatory."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Necrosis",
+    "stem": "A skin wound becomes infected and develops liquefied, purulent tissue. Which type of necrosis is most consistent with this pattern?",
+    "options": [
+      "Liquefactive necrosis",
+      "Caseous necrosis",
+      "Coagulative necrosis",
+      "Fat necrosis"
+    ],
+    "answer": 0,
+    "rationale": "Liquefactive necrosis occurs when enzymatic digestion predominates, classically in abscesses and brain infarcts. Pus reflects neutrophil-rich enzymatic tissue digestion."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Cellular adaptation",
+    "stem": "A patient with long-standing hypertension develops left ventricular enlargement. Which cellular adaptation best explains this finding?",
+    "options": [
+      "Hypertrophy from increased workload",
+      "Dysplasia from DNA instability",
+      "Atrophy from denervation",
+      "Metaplasia from chronic irritation"
+    ],
+    "answer": 0,
+    "rationale": "Cardiac myocytes have limited ability to divide, so increased workload commonly causes hypertrophy: increased cell size and contractile protein content."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Cellular adaptation",
+    "stem": "A chronic smoker develops replacement of normal ciliated columnar epithelium with stratified squamous epithelium in the bronchial lining. Which term best describes this adaptation?",
+    "options": [
+      "Dysplasia",
+      "Anaplasia",
+      "Hypertrophy",
+      "Metaplasia"
+    ],
+    "answer": 3,
+    "rationale": "Metaplasia is replacement of one mature cell type with another better able to tolerate chronic stress. It can be reversible, but persistent stress increases risk of dysplasia and malignancy."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Cellular adaptation",
+    "stem": "A Pap smear shows disordered epithelial growth with variation in cell size and shape, but cells have not invaded the basement membrane. Which term is most accurate?",
+    "options": [
+      "Dysplasia",
+      "Liquefactive necrosis",
+      "Atrophy",
+      "Hyperplasia"
+    ],
+    "answer": 0,
+    "rationale": "Dysplasia means abnormal cellular growth and maturation. It can be premalignant, but invasion through the basement membrane is required before calling it invasive cancer."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Oxidative stress",
+    "stem": "Free radical injury to a cell membrane most directly damages which structure?",
+    "options": [
+      "Polyunsaturated fatty acids in membrane phospholipids",
+      "Histones attached to DNA only during mitosis",
+      "Extracellular albumin in plasma",
+      "Ribosomal RNA inside the nucleolus"
+    ],
+    "answer": 0,
+    "rationale": "Reactive oxygen species cause lipid peroxidation of cell and organelle membranes, damaging phospholipids and increasing membrane permeability."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Calcium-mediated injury",
+    "stem": "Why is sustained intracellular calcium elevation dangerous during severe cellular injury?",
+    "options": [
+      "It prevents mitochondrial permeability changes",
+      "It permanently blocks all inflammatory cytokine release",
+      "It shuts down phospholipases and proteases",
+      "It activates enzymes that degrade membranes, proteins, and DNA"
+    ],
+    "answer": 3,
+    "rationale": "Excess intracellular calcium activates phospholipases, proteases, endonucleases, and ATPases. These enzymes worsen membrane, cytoskeletal, nuclear, and energy injury."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Hypoxia vs ischemia",
+    "stem": "Why does ischemia usually injure tissue faster than isolated hypoxemia?",
+    "options": [
+      "Hypoxemia always causes membrane rupture within seconds",
+      "Ischemia increases aerobic ATP production above demand",
+      "Ischemia reduces oxygen delivery and impairs waste/metabolite removal",
+      "Hypoxemia prevents anaerobic glycolysis completely"
+    ],
+    "answer": 2,
+    "rationale": "Ischemia deprives tissue of oxygen and substrates while also preventing removal of acids and metabolic waste. That combination accelerates ATP depletion and injury."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Cell membrane signaling",
+    "stem": "A hormone binds to a receptor on the cell surface and triggers intracellular cyclic AMP signaling. What is the best description of this event?",
+    "options": [
+      "Passive diffusion through every membrane pore",
+      "Signal transduction through a membrane receptor and second messenger",
+      "Random mutation of a proto-oncogene",
+      "Direct insertion of hormone into nuclear DNA"
+    ],
+    "answer": 1,
+    "rationale": "Many hormones and neurotransmitters bind membrane receptors, which convert an extracellular signal into intracellular second-messenger activity such as cAMP, IP3, DAG, or calcium signaling."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Genetics",
+    "stem": "A pathogenic mutation is found only in a patient’s colon tumor cells and not in blood or germ cells. Which statement is most accurate?",
+    "options": [
+      "It is a germline mutation and must be present in all children",
+      "It proves mitochondrial inheritance",
+      "It is an epigenetic change with no DNA sequence alteration",
+      "It is a somatic mutation and is not directly inherited by offspring"
+    ],
+    "answer": 3,
+    "rationale": "Somatic mutations occur in body cells after conception and are not transmitted through sperm or ova. Germline mutations are present in reproductive cells and can be inherited."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Epigenetics",
+    "stem": "Which example best illustrates epigenetic regulation?",
+    "options": [
+      "Translocation between chromosomes causing fusion protein formation",
+      "Replacement of adenine with guanine in a coding region",
+      "Deletion of an entire chromosome from every body cell",
+      "DNA methylation reducing expression of a gene without changing the DNA sequence"
+    ],
+    "answer": 3,
+    "rationale": "Epigenetic changes alter gene expression without changing the underlying DNA sequence. DNA methylation and histone modification are classic examples."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Cancer biology",
+    "stem": "A loss-of-function mutation in TP53 increases cancer risk primarily because p53 normally does what?",
+    "options": [
+      "Promotes DNA repair, cell-cycle arrest, or apoptosis after significant DNA damage",
+      "Converts lactic acid back to glucose during shock",
+      "Stimulates telomerase in every mature somatic cell",
+      "Increases sodium-potassium pump activity in hypoxic cells"
+    ],
+    "answer": 0,
+    "rationale": "p53 is a tumor suppressor. It helps halt the cell cycle when DNA damage is detected and can trigger apoptosis if damage is severe. Loss of this checkpoint allows abnormal cells to survive."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Cancer biology",
+    "stem": "A proto-oncogene becomes constitutively active after a gain-of-function mutation. What is the expected result?",
+    "options": [
+      "Immediate cell swelling from osmotic injury",
+      "Excessive growth signaling and increased cell proliferation",
+      "Conversion of squamous cells into mucus-producing cells",
+      "Complete inability of the cell to divide"
+    ],
+    "answer": 1,
+    "rationale": "Proto-oncogenes normally promote growth in regulated ways. Gain-of-function activation can convert them into oncogenes that drive uncontrolled proliferation."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Telomeres / aging",
+    "stem": "Why is telomerase activity clinically relevant in many cancers?",
+    "options": [
+      "It causes mature RBCs to regain nuclei",
+      "It prevents DNA replication in rapidly dividing cells",
+      "It helps cells maintain telomere length and avoid replicative senescence",
+      "It blocks all angiogenesis in malignant tumors"
+    ],
+    "answer": 2,
+    "rationale": "Many malignant cells reactivate telomerase, allowing telomere maintenance and continued replication. This supports cellular immortality, one hallmark of cancer."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Endoplasmic reticulum",
+    "stem": "A genetic disorder causes misfolded proteins to accumulate in the rough endoplasmic reticulum. Which cellular response is most likely?",
+    "options": [
+      "Conversion of DNA into RNA without transcription factors",
+      "Unfolded protein response with possible apoptosis if stress persists",
+      "Immediate increase in oxidative phosphorylation",
+      "Loss of all plasma membrane receptors"
+    ],
+    "answer": 1,
+    "rationale": "ER stress activates the unfolded protein response to reduce new protein translation and increase chaperone activity. Persistent stress can trigger apoptosis."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Lysosomes",
+    "stem": "A lysosomal storage disorder is most directly caused by which problem?",
+    "options": [
+      "Excess ATP generation in mitochondria",
+      "Failure of ribosomes to bind mRNA in the nucleus",
+      "Defective degradation of cellular substances inside lysosomes",
+      "Overproduction of surfactant in alveoli"
+    ],
+    "answer": 2,
+    "rationale": "Lysosomes contain enzymes that digest cellular waste and macromolecules. Enzyme defects can cause substrate accumulation and cellular dysfunction."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Cell injury patterns",
+    "stem": "Which clinical pattern most strongly suggests irreversible cellular injury rather than reversible injury?",
+    "options": [
+      "Loss of membrane integrity with leakage of intracellular enzymes into blood",
+      "Reduced ATP with intact plasma membrane",
+      "Temporary ribosomal detachment from rough ER",
+      "Mild cell swelling that resolves after perfusion improves"
+    ],
+    "answer": 0,
+    "rationale": "Membrane rupture and enzyme leakage are hallmarks of irreversible injury/necrosis. Reversible injury can include swelling and reduced protein synthesis while membranes remain intact."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Clinical reasoning",
+    "stem": "An NP reviews an elevated serum troponin after chest pain. At the cellular level, why does troponin appear in the blood?",
+    "options": [
+      "Cardiac cells intentionally secrete troponin during normal contraction",
+      "Troponin is filtered from urine into blood during ischemia",
+      "Liver cells convert lactate into troponin during shock",
+      "Myocyte membrane disruption allows intracellular proteins to leak into circulation"
+    ],
+    "answer": 3,
+    "rationale": "Troponin is normally intracellular in cardiac myocytes. Ischemic necrosis disrupts membranes, allowing intracellular proteins to enter the bloodstream."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Inflammation link",
+    "stem": "Necrotic tissue commonly triggers more inflammation than apoptotic tissue because necrosis does what?",
+    "options": [
+      "Packages cellular fragments for quiet phagocytosis",
+      "Occurs only during normal embryologic development",
+      "Releases intracellular contents that act as danger signals",
+      "Requires no immune-cell response"
+    ],
+    "answer": 2,
+    "rationale": "Necrosis releases intracellular molecules that activate inflammation. Apoptotic bodies are usually cleared without major release of intracellular contents."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Cell-cycle control",
+    "stem": "A medication blocks rapidly dividing tumor cells in the S phase. Which process is being targeted?",
+    "options": [
+      "Mitochondrial ATP export",
+      "Lysosomal acidification",
+      "DNA synthesis",
+      "Cytokine receptor recycling"
+    ],
+    "answer": 2,
+    "rationale": "The S phase of the cell cycle is when DNA is synthesized. Many cancer therapies exploit rapid cell-cycle activity, though normal rapidly dividing cells can also be affected."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "Clinical genetics",
+    "stem": "A patient asks why two people with the same pathogenic variant can have different disease severity. Which concept best explains this?",
+    "options": [
+      "Complete penetrance in all carriers",
+      "Necrosis",
+      "Osmotic equilibrium",
+      "Variable expressivity"
+    ],
+    "answer": 3,
+    "rationale": "Variable expressivity means the same genetic variant can produce different phenotypic severity or features among individuals. Penetrance refers to whether the phenotype appears at all."
+  },
+  {
+    "chapter": "Chapter 1",
+    "topic": "APRN application",
+    "stem": "Which study strategy best matches graduate-level pathophysiology expectations for cellular function?",
+    "options": [
+      "Ignore molecular mechanisms because NPs only treat symptoms",
+      "Connect organ-level symptoms to cellular mechanisms such as ATP failure, membrane injury, and gene regulation",
+      "Focus only on normal anatomy labels",
+      "Memorize isolated definitions without linking them to clinical cases"
+    ],
+    "answer": 1,
+    "rationale": "Advanced pathophysiology expects mechanism-based reasoning. NP-level exam questions often ask why a presentation occurs, not merely what term defines it."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Osmosis / tonicity",
+    "stem": "A patient develops acute hypernatremia after inadequate water intake. What happens to brain cells initially?",
+    "options": [
+      "Sodium rapidly enters cells and eliminates the osmotic gradient",
+      "Water shifts out of cells, causing cellular dehydration and shrinkage",
+      "ADH secretion shuts off completely",
+      "Water shifts into cells, causing immediate cerebral edema"
+    ],
+    "answer": 1,
+    "rationale": "Hypernatremia increases extracellular osmolality. Water moves out of cells toward the hypertonic extracellular space, causing cellular dehydration and neurologic symptoms."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Hyponatremia",
+    "stem": "A patient with severe acute hyponatremia develops confusion and seizure. What is the main pathophysiologic concern?",
+    "options": [
+      "Water shifts into brain cells, causing cerebral edema",
+      "Extracellular fluid becomes hypertonic and shrinks the brain",
+      "Calcium binds albumin and blocks ADH release",
+      "Potassium shifts out of neurons, causing flaccid paralysis only"
+    ],
+    "answer": 0,
+    "rationale": "Acute hyponatremia lowers extracellular osmolality. Water enters brain cells, risking cerebral edema, seizures, herniation, and death if severe."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "SIADH",
+    "stem": "A patient with small-cell lung cancer has low serum sodium, low serum osmolality, concentrated urine, and no edema. Which mechanism best explains this?",
+    "options": [
+      "Aldosterone excess causing sodium wasting",
+      "Excess ADH causing water retention and dilutional hyponatremia",
+      "Primary hyperventilation causing respiratory alkalosis",
+      "Absent ADH causing free-water loss"
+    ],
+    "answer": 1,
+    "rationale": "SIADH causes inappropriate water reabsorption despite low serum osmolality. Sodium is diluted, urine remains inappropriately concentrated, and edema is often absent because sodium balance is not primarily expanded."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Diabetes insipidus",
+    "stem": "A patient has intense thirst, large volumes of dilute urine, hypernatremia, and high serum osmolality. Which disorder best fits?",
+    "options": [
+      "Primary adrenal insufficiency with sodium loss",
+      "Congestive heart failure with dilutional hyponatremia",
+      "Diabetes insipidus",
+      "SIADH"
+    ],
+    "answer": 2,
+    "rationale": "Diabetes insipidus reflects absent ADH effect or secretion, causing free-water loss, dilute urine, hypernatremia, and increased serum osmolality."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "RAAS",
+    "stem": "A patient loses blood volume after GI bleeding. Which response helps restore circulating volume?",
+    "options": [
+      "Suppression of sympathetic tone and aldosterone release",
+      "Increased atrial natriuretic peptide as the dominant response",
+      "Immediate urinary sodium wasting to lower preload",
+      "Renin release leading to angiotensin II and aldosterone-mediated sodium/water retention"
+    ],
+    "answer": 3,
+    "rationale": "Low renal perfusion activates the RAAS. Angiotensin II causes vasoconstriction and stimulates aldosterone, which increases sodium reabsorption and water retention."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Edema",
+    "stem": "A patient with nephrotic syndrome develops generalized edema. Which mechanism contributes most directly?",
+    "options": [
+      "Respiratory alkalosis from hyperventilation",
+      "Reduced plasma oncotic pressure from hypoalbuminemia",
+      "Decreased capillary hydrostatic pressure",
+      "Increased intracellular potassium concentration"
+    ],
+    "answer": 1,
+    "rationale": "Albumin helps retain fluid in the intravascular space. Hypoalbuminemia lowers oncotic pressure, allowing fluid to move into the interstitial space and causing edema."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Potassium / ECG risk",
+    "stem": "A patient with chronic kidney disease has K+ 6.7 mEq/L and peaked T waves. What is the immediate pathophysiologic concern?",
+    "options": [
+      "Loss of respiratory drive from metabolic alkalosis",
+      "Cerebral edema from water entering neurons",
+      "Altered cardiac membrane excitability causing life-threatening dysrhythmia",
+      "Tetany from increased neuromuscular excitability due to low calcium"
+    ],
+    "answer": 2,
+    "rationale": "Hyperkalemia changes the resting membrane potential of cardiac cells and can cause fatal conduction abnormalities and dysrhythmias. ECG changes make this urgent."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Hypokalemia",
+    "stem": "A patient taking loop diuretics develops muscle weakness and U waves on ECG. Which electrolyte problem is most likely?",
+    "options": [
+      "Hypernatremia",
+      "Hypermagnesemia",
+      "Hypokalemia",
+      "Hyperphosphatemia"
+    ],
+    "answer": 2,
+    "rationale": "Loop and thiazide diuretics can increase urinary potassium loss. Hypokalemia can cause weakness, ileus, arrhythmias, ST depression, flattened T waves, and U waves."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Potassium shift",
+    "stem": "A patient in diabetic ketoacidosis has serum K+ 5.5 mEq/L before insulin therapy. Which interpretation is best?",
+    "options": [
+      "Total body potassium may be depleted despite elevated serum potassium",
+      "Insulin therapy will worsen hyperkalemia by shifting K+ out of cells",
+      "Serum potassium is irrelevant in DKA management",
+      "Total body potassium is always elevated in DKA"
+    ],
+    "answer": 0,
+    "rationale": "Acidosis and insulin deficiency shift potassium out of cells, raising serum K+. Osmotic diuresis causes urinary potassium loss, so total body potassium is often depleted. Insulin can then drive K+ into cells and reveal/worsen hypokalemia."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Calcium",
+    "stem": "A post-thyroidectomy patient develops perioral numbness, muscle cramps, and a positive Chvostek sign. Which disturbance is most likely?",
+    "options": [
+      "Hypocalcemia from impaired parathyroid hormone effect",
+      "Hypernatremia from water deprivation",
+      "Respiratory acidosis from hypoventilation",
+      "Hyperkalemia from aldosterone deficiency"
+    ],
+    "answer": 0,
+    "rationale": "Hypocalcemia increases neuromuscular excitability and can cause paresthesias, tetany, Chvostek sign, and Trousseau sign. Post-thyroidectomy hypoparathyroidism is a classic cause."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Magnesium",
+    "stem": "A patient with alcohol use disorder has refractory hypokalemia despite potassium replacement. Which additional deficiency should the NP suspect?",
+    "options": [
+      "Hyperchloremia",
+      "Hypernatremia",
+      "Hypercalcemia",
+      "Hypomagnesemia"
+    ],
+    "answer": 3,
+    "rationale": "Magnesium deficiency promotes renal potassium wasting and can make hypokalemia difficult to correct until magnesium is replaced."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Phosphate",
+    "stem": "After insulin is started for DKA, serum phosphate drops. What explains this finding?",
+    "options": [
+      "Acidosis causes phosphate to leave bone permanently",
+      "ADH increases phosphate reabsorption in sweat glands",
+      "Insulin blocks all renal phosphate excretion immediately",
+      "Insulin shifts phosphate into cells along with glucose and potassium"
+    ],
+    "answer": 3,
+    "rationale": "Insulin drives glucose, potassium, and phosphate into cells. DKA patients can have total body phosphate depletion, and treatment can reveal or worsen hypophosphatemia."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Metabolic acidosis",
+    "stem": "ABG: pH 7.24, PaCO2 28 mmHg, HCO3− 12 mEq/L. Which interpretation is best?",
+    "options": [
+      "Metabolic acidosis with respiratory compensation",
+      "Respiratory acidosis with metabolic compensation",
+      "Normal ABG",
+      "Metabolic alkalosis with respiratory compensation"
+    ],
+    "answer": 0,
+    "rationale": "The low pH shows acidemia. The low bicarbonate is the primary abnormality, indicating metabolic acidosis. The low PaCO2 reflects compensatory hyperventilation."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Respiratory acidosis",
+    "stem": "ABG: pH 7.28, PaCO2 62 mmHg, HCO3− 29 mEq/L in a patient with COPD. Which interpretation is best?",
+    "options": [
+      "Respiratory acidosis with partial metabolic compensation",
+      "Respiratory alkalosis with renal compensation",
+      "Metabolic acidosis with no compensation",
+      "Metabolic alkalosis from vomiting"
+    ],
+    "answer": 0,
+    "rationale": "Acidemia with elevated PaCO2 indicates respiratory acidosis. Elevated bicarbonate suggests renal compensation, which is common in chronic CO2 retention."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Respiratory alkalosis",
+    "stem": "A patient with panic-associated hyperventilation has pH 7.52, PaCO2 25 mmHg, HCO3− 22 mEq/L. Which diagnosis fits?",
+    "options": [
+      "Respiratory acidosis",
+      "Metabolic alkalosis",
+      "Acute respiratory alkalosis",
+      "High anion gap metabolic acidosis"
+    ],
+    "answer": 2,
+    "rationale": "Alkalemia with low PaCO2 indicates respiratory alkalosis. Bicarbonate is near normal because acute respiratory disorders have limited renal compensation initially."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Metabolic alkalosis",
+    "stem": "A patient has several days of vomiting. ABG shows pH 7.49, PaCO2 48 mmHg, HCO3− 36 mEq/L. Which interpretation is best?",
+    "options": [
+      "Uncompensated respiratory alkalosis",
+      "Respiratory acidosis with renal compensation",
+      "Metabolic alkalosis with respiratory compensation",
+      "Metabolic acidosis with respiratory compensation"
+    ],
+    "answer": 2,
+    "rationale": "Vomiting causes hydrogen and chloride loss, leading to metabolic alkalosis. Elevated PaCO2 reflects hypoventilatory respiratory compensation."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Anion gap",
+    "stem": "Na+ 140, Cl− 100, HCO3− 10. What is the anion gap using the common formula Na − (Cl + HCO3)?",
+    "options": [
+      "10",
+      "20",
+      "30",
+      "250"
+    ],
+    "answer": 2,
+    "rationale": "Anion gap = 140 − (100 + 10) = 30. This is elevated and suggests accumulation of unmeasured acids such as lactate, ketoacids, or retained acids in renal failure."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Normal gap metabolic acidosis",
+    "stem": "A patient has severe diarrhea and metabolic acidosis with a normal anion gap. Which mechanism best explains this?",
+    "options": [
+      "Accumulation of lactic acid from shock",
+      "Retention of sulfate and phosphate from renal failure",
+      "Excess ketone production from insulin deficiency",
+      "Loss of bicarbonate-rich intestinal fluid"
+    ],
+    "answer": 3,
+    "rationale": "Diarrhea causes gastrointestinal bicarbonate loss. Chloride often rises to maintain electroneutrality, producing normal anion gap metabolic acidosis."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "High gap metabolic acidosis",
+    "stem": "Which condition is most likely to cause high anion gap metabolic acidosis?",
+    "options": [
+      "Lactic acidosis from tissue hypoperfusion",
+      "Chronic vomiting",
+      "Primary aldosteronism",
+      "Hyperventilation from anxiety"
+    ],
+    "answer": 0,
+    "rationale": "High anion gap metabolic acidosis results from added unmeasured acids. Lactic acidosis, ketoacidosis, renal failure, and certain toxins are classic causes."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Compensation",
+    "stem": "In primary metabolic acidosis, which compensation should the NP expect?",
+    "options": [
+      "Immediate suppression of all chemoreceptor activity",
+      "Increased ventilation to lower PaCO2",
+      "Increased renal bicarbonate loss",
+      "Reduced ventilation to retain PaCO2"
+    ],
+    "answer": 1,
+    "rationale": "The respiratory system compensates for metabolic acidosis by increasing ventilation, which lowers PaCO2 and reduces acidemia. Compensation does not fully normalize pH if the primary disorder persists."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Mixed disorder",
+    "stem": "A septic patient has pH 7.10, PaCO2 55 mmHg, HCO3− 16 mEq/L. Which interpretation is most concerning?",
+    "options": [
+      "Fully compensated metabolic alkalosis",
+      "Mixed metabolic acidosis and respiratory acidosis",
+      "Pure metabolic acidosis with appropriate compensation",
+      "Pure respiratory alkalosis"
+    ],
+    "answer": 1,
+    "rationale": "The low bicarbonate causes metabolic acidosis. PaCO2 should be low if respiratory compensation is appropriate, but it is high, indicating a simultaneous respiratory acidosis."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Volume depletion",
+    "stem": "Which finding best supports hypovolemic dehydration rather than isolated intracellular water shift?",
+    "options": [
+      "Orthostatic tachycardia and hypotension",
+      "Bilateral crackles from pulmonary edema",
+      "Peaked T waves",
+      "Positive Chvostek sign"
+    ],
+    "answer": 0,
+    "rationale": "Hypovolemia reduces effective circulating volume. Orthostatic tachycardia and hypotension suggest impaired intravascular volume and compensatory sympathetic activation."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Fluid therapy reasoning",
+    "stem": "A patient with hypovolemic shock needs rapid intravascular volume support. Which fluid type is generally most appropriate initially?",
+    "options": [
+      "Free water orally only",
+      "Isotonic crystalloid",
+      "Hypertonic saline for all cases",
+      "Hypotonic IV fluid as first-line resuscitation"
+    ],
+    "answer": 1,
+    "rationale": "Isotonic crystalloids expand extracellular and intravascular volume and are commonly used for initial resuscitation. Hypotonic fluid can worsen cellular swelling and is not used for shock resuscitation."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Hypertonic saline caution",
+    "stem": "Why must severe chronic hyponatremia be corrected carefully rather than rapidly normalized?",
+    "options": [
+      "Sodium correction has no neurologic consequences",
+      "Rapid correction can cause osmotic demyelination",
+      "Slow correction causes cerebral herniation in every patient",
+      "Rapid correction always causes immediate renal failure"
+    ],
+    "answer": 1,
+    "rationale": "In chronic hyponatremia, brain cells adapt by reducing intracellular osmoles. Rapid sodium correction can pull water out of brain cells and cause osmotic demyelination."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Aldosterone",
+    "stem": "A patient with primary adrenal insufficiency is most likely to develop which electrolyte pattern?",
+    "options": [
+      "Hyponatremia and hyperkalemia",
+      "Hypercalcemia and hypophosphatemia only",
+      "Respiratory alkalosis and low chloride",
+      "Hypernatremia and hypokalemia"
+    ],
+    "answer": 0,
+    "rationale": "Low aldosterone reduces sodium reabsorption and potassium excretion in the distal nephron, contributing to hyponatremia, volume depletion, and hyperkalemia."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Primary aldosteronism",
+    "stem": "A patient has resistant hypertension, hypokalemia, and metabolic alkalosis. Which mechanism best explains this pattern?",
+    "options": [
+      "ADH deficiency causing free-water loss only",
+      "Loss of bicarbonate from diarrhea",
+      "Excess aldosterone increasing sodium retention and potassium/hydrogen ion excretion",
+      "Failure of parathyroid hormone secretion"
+    ],
+    "answer": 2,
+    "rationale": "Aldosterone increases sodium reabsorption and promotes potassium and hydrogen ion secretion. Excess aldosterone can cause hypertension, hypokalemia, and metabolic alkalosis."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "APRN application",
+    "stem": "Which approach best reflects NP-level acid–base reasoning?",
+    "options": [
+      "Memorize one lab value and ignore the patient context",
+      "Identify pH direction, determine primary PaCO2/HCO3− driver, assess compensation, then connect to the clinical cause",
+      "Assume any low bicarbonate is respiratory acidosis",
+      "Treat every abnormal ABG with bicarbonate"
+    ],
+    "answer": 1,
+    "rationale": "Advanced practice reasoning requires systematic interpretation plus clinical correlation. ABGs should be interpreted in sequence and then connected to the likely disease process."
+  },
+  {
+    "chapter": "Chapter 6",
+    "topic": "Nutrition / electrolytes",
+    "stem": "A malnourished patient begins aggressive feeding and develops weakness, hypophosphatemia, hypokalemia, and hypomagnesemia. Which process is most likely?",
+    "options": [
+      "SIADH from excess ADH secretion",
+      "Respiratory acidosis from hypoventilation",
+      "Primary hyperparathyroidism",
+      "Refeeding syndrome from insulin-driven intracellular electrolyte shifts"
+    ],
+    "answer": 3,
+    "rationale": "Refeeding increases insulin release, driving phosphate, potassium, and magnesium into cells. Severe hypophosphatemia can impair ATP generation and respiratory/cardiac muscle function."
+  }
+];
+
+function letter(i){ return ['A','B','C','D'][i]; }
+function renderQuiz(){
+  const form = document.getElementById('quiz');
+  form.innerHTML = questions.map((q, idx) => `
+    <section class="question" id="q${idx+1}">
+      <div class="qhead">
+        <div><span class="qnum">${idx+1}.</span> ${escapeHtml(q.stem)}</div>
+        <span class="tag">${q.chapter}</span>
+      </div>
+      <p class="muted"><strong>Focus:</strong> ${escapeHtml(q.topic)}</p>
+      <fieldset>
+        ${q.options.map((opt,i)=>`
+          <label class="option" id="q${idx}_opt${i}">
+            <input type="radio" name="q${idx}" value="${i}" onchange="updateProgress()" />
+            <span><strong>${letter(i)}.</strong> ${escapeHtml(opt)}</span>
+          </label>`).join('')}
+      </fieldset>
+      <div class="feedback" id="fb${idx}"></div>
+    </section>
+  `).join('');
+  document.getElementById('answerKey').innerHTML = questions.map((q,idx)=>`<div class="key-item">${idx+1}: ${letter(q.answer)}</div>`).join('');
+  updateProgress();
+}
+function escapeHtml(str){ return String(str).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+function updateProgress(){
+  const answered = questions.filter((_,idx)=>document.querySelector(`input[name="q${idx}"]:checked`)).length;
+  document.getElementById('scorebox').textContent = `${answered} / ${questions.length} answered`;
+  document.getElementById('bar').style.width = `${answered/questions.length*100}%`;
+}
+function gradeQuiz(){
+  let correct = 0;
+  questions.forEach((q,idx)=>{
+    const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+    const fb = document.getElementById(`fb${idx}`);
+    const selectedValue = selected ? Number(selected.value) : null;
+    const isCorrect = selectedValue === q.answer;
+    if(isCorrect) correct++;
+    fb.className = `feedback ${isCorrect ? 'correct':'incorrect'}`;
+    fb.style.display='block';
+    fb.innerHTML = `${isCorrect ? '✅ Correct.' : '❌ Incorrect or unanswered.'}<br>
+      <span class="answer-pill">Answer: ${letter(q.answer)}</span> ${escapeHtml(q.options[q.answer])}
+      <div class="rationale"><strong>Rationale:</strong> ${escapeHtml(q.rationale)}</div>`;
+  });
+  const pct = Math.round((correct/questions.length)*100);
+  document.getElementById('scorebox').textContent = `Score: ${correct} / ${questions.length} (${pct}%)`;
+  document.getElementById('bar').style.width = `${pct}%`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function showAllRationales(){
+  questions.forEach((q,idx)=>{
+    const fb = document.getElementById(`fb${idx}`);
+    fb.className = 'feedback';
+    fb.style.display='block';
+    fb.innerHTML = `<span class="answer-pill">Answer: ${letter(q.answer)}</span> ${escapeHtml(q.options[q.answer])}
+      <div class="rationale"><strong>Rationale:</strong> ${escapeHtml(q.rationale)}</div>`;
+  });
+}
+function resetQuiz(){
+  if(!confirm('Reset all answers and hide rationales?')) return;
+  document.querySelectorAll('input[type="radio"]').forEach(el=>el.checked=false);
+  document.querySelectorAll('.feedback').forEach(el=>{el.style.display='none'; el.innerHTML=''; el.className='feedback';});
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+renderQuiz();
+</script>
+</body>
+</html>

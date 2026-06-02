@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 3 Musculoskeletal Interactive Practice Quiz</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #182230;
+      --muted: #667085;
+      --border: #d0d5dd;
+      --shadow: 0 8px 24px rgba(16,24,40,.08);
+      --correct-bg: #ecfdf3;
+      --correct-border: #12b76a;
+      --incorrect-bg: #fef3f2;
+      --incorrect-border: #f04438;
+      --accent: #344054;
+      --button: #1d2939;
+      --button-text: #ffffff;
+      --soft: #eef2f6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+    header {
+      background: linear-gradient(135deg, #fff, #eef2f6);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.35rem, 3.5vw, 2rem);
+      letter-spacing: -.02em;
+    }
+    .subtitle {
+      color: var(--muted);
+      margin: 0;
+      font-size: .98rem;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+    }
+    .stat b {
+      display: block;
+      font-size: 1.15rem;
+    }
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: .82rem;
+      margin-top: 2px;
+    }
+    .progress-shell {
+      height: 12px;
+      background: #e4e7ec;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 14px;
+      border: 1px solid #d0d5dd;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width .25s ease;
+    }
+    .main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 270px;
+      gap: 16px;
+      align-items: start;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+    .q-label {
+      color: var(--muted);
+      font-size: .92rem;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .question {
+      font-size: 1.18rem;
+      font-weight: 700;
+      margin: 0 0 16px;
+    }
+    .choices {
+      display: grid;
+      gap: 10px;
+    }
+    .choice {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      border-radius: 14px;
+      padding: 14px 14px;
+      text-align: left;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform .05s ease, border-color .15s ease, background-color .15s ease;
+    }
+    .choice:hover:not(:disabled) {
+      border-color: #98a2b3;
+      transform: translateY(-1px);
+    }
+    .choice:disabled {
+      cursor: default;
+      opacity: 1;
+    }
+    .choice.correct {
+      background: var(--correct-bg);
+      border-color: var(--correct-border);
+      font-weight: 700;
+    }
+    .choice.incorrect {
+      background: var(--incorrect-bg);
+      border-color: var(--incorrect-border);
+      font-weight: 700;
+    }
+    .choice .letter {
+      font-weight: 800;
+      margin-right: 8px;
+    }
+    .feedback {
+      margin-top: 16px;
+      border-radius: 16px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      background: var(--soft);
+      display: none;
+    }
+    .feedback.good {
+      display: block;
+      border-color: var(--correct-border);
+      background: var(--correct-bg);
+    }
+    .feedback.bad {
+      display: block;
+      border-color: var(--incorrect-border);
+      background: var(--incorrect-bg);
+    }
+    .feedback h3 {
+      margin: 0 0 6px;
+      font-size: 1.05rem;
+    }
+    .feedback p {
+      margin: 0;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    button.control {
+      border: 1px solid var(--button);
+      border-radius: 12px;
+      padding: 11px 14px;
+      background: var(--button);
+      color: var(--button-text);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: .95rem;
+    }
+    button.control.secondary {
+      background: #fff;
+      color: var(--button);
+    }
+    button.control:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+    aside.card {
+      position: sticky;
+      top: 16px;
+      padding: 16px;
+    }
+    .nav-title {
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 7px;
+    }
+    .nav-btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      border-radius: 10px;
+      padding: 8px 0;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .nav-btn.current {
+      outline: 3px solid #d0d5dd;
+    }
+    .nav-btn.done-correct {
+      background: var(--correct-bg);
+      border-color: var(--correct-border);
+    }
+    .nav-btn.done-incorrect {
+      background: var(--incorrect-bg);
+      border-color: var(--incorrect-border);
+    }
+    details {
+      margin-top: 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+    summary {
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .answer-key {
+      margin-top: 12px;
+      display: grid;
+      gap: 8px;
+    }
+    .key-item {
+      padding: 10px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #eaecf0;
+      font-size: .92rem;
+    }
+    .print-note {
+      color: var(--muted);
+      font-size: .86rem;
+      margin-top: 8px;
+    }
+    @media (max-width: 820px) {
+      .main { grid-template-columns: 1fr; }
+      aside.card { position: static; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media print {
+      body { background: #fff; }
+      header, .main, .controls, .progress-shell { box-shadow: none; }
+      aside { display: none; }
+      details { break-inside: avoid; }
+      details:not([open]) .answer-key { display: block; }
+      details summary { display: none; }
+      .card { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Module 3 Musculoskeletal Interactive Practice Quiz</h1>
+      <p class="subtitle">50 multiple-choice questions based only on the uploaded Module3Musculoskeletal document. Choose an answer to receive immediate feedback and rationale.</p>
+      <div class="stats">
+        <div class="stat"><b id="answeredCount">0</b><span>Answered</span></div>
+        <div class="stat"><b id="remainingCount">50</b><span>Remaining</span></div>
+        <div class="stat"><b id="scoreCount">0</b><span>Correct</span></div>
+        <div class="stat"><b id="scorePct">0%</b><span>Score</span></div>
+      </div>
+      <div class="progress-shell" aria-label="Progress"><div class="progress-bar" id="progressBar"></div></div>
+    </header>
+
+    <div class="main">
+      <section class="card" aria-live="polite">
+        <div class="q-label">
+          <span id="qNumber">Question 1 of 50</span>
+          <span id="qStatus">Not answered</span>
+        </div>
+        <p class="question" id="questionText"></p>
+        <div class="choices" id="choices"></div>
+        <div class="feedback" id="feedback"></div>
+        <div class="controls">
+          <button class="control secondary" id="prevBtn">Previous</button>
+          <button class="control" id="nextBtn">Next</button>
+          <button class="control secondary" id="firstUnansweredBtn">First unanswered</button>
+          <button class="control secondary" id="resetBtn">Reset quiz</button>
+        </div>
+      </section>
+
+      <aside class="card">
+        <div class="nav-title">Question navigator</div>
+        <div class="nav-grid" id="navGrid"></div>
+        <p class="print-note">Green = correct. Red = incorrect. Your progress is saved in this browser.</p>
+      </aside>
+    </div>
+
+    <details>
+      <summary>Printable answer key</summary>
+      <p class="print-note">Use this after practice. It shows the correct answer and rationale for each question.</p>
+      <div class="answer-key" id="answerKey"></div>
+    </details>
+  </div>
+
+  <script>
+    const questions = [{"question": "Which bone cell is primarily responsible for forming bone through ossification or osteogenesis?", "options": ["Osteoblasts", "Osteocytes", "Osteoclasts", "Erythrocytes"], "answer": 0, "rationale": "The document states that osteoblasts form bone through ossification or osteogenesis and synthesize/mineralize bone matrix."}, {"question": "Osteoblasts are derived from which type of stem cell?", "options": ["Hematopoietic stem cells", "Mesenchymal stem cells", "Satellite cells", "Dendritic cells"], "answer": 1, "rationale": "Osteoblasts originate from mesenchymal stem cells, which differentiate into osteoprogenitor cells and then osteoblasts."}, {"question": "What is osteoid?", "options": ["A mature multinucleated resorptive cell", "A calcium reservoir in blood", "The unmineralized organic component of bone secreted by osteoblasts", "A decoy receptor for RANKL"], "answer": 2, "rationale": "During ossification, osteoblasts secrete osteoid, the unmineralized organic component that later becomes mineralized."}, {"question": "What is the primary function of osteocytes?", "options": ["Bone maintenance", "Direct production of antibodies", "Formation of biofilms", "Viral latency"], "answer": 0, "rationale": "Osteocytes are derived from osteoblasts and are described as maintaining bone tissue."}, {"question": "According to the document, what does sclerostin secreted by osteocytes do?", "options": ["Stimulates collagen hydroxylation", "Blocks all osteoclast differentiation", "Inhibits osteoblast activity and promotes osteoclast activity", "Forms hydroxyapatite crystals directly"], "answer": 2, "rationale": "The document states that osteocytes secrete sclerostin, which inhibits osteoblast activity and promotes osteoclast activity."}, {"question": "Osteoclasts originate from which source?", "options": ["Mesenchymal stem cells only", "Mature osteocytes", "Chondrocytes", "Hematopoietic stem cells in bone marrow"], "answer": 3, "rationale": "Osteoclasts are large multinucleated cells derived from hematopoietic stem cells in bone marrow, similar to monocytes/macrophages."}, {"question": "What substances do osteoclasts release to resorb bone?", "options": ["Acidic substances and proteolytic enzymes such as cathepsin K", "IgG and IgM", "Osteocalcin and alkaline phosphatase", "Estrogen and testosterone"], "answer": 0, "rationale": "Osteoclasts create a sealed microenvironment and release acid plus proteolytic enzymes such as cathepsin K to dissolve mineralized matrix and degrade collagen."}, {"question": "What is RANK in the RANK/RANKL/OPG system?", "options": ["A decoy receptor produced by osteoblasts", "A receptor on osteoclast precursors and mature osteoclasts", "A collagen-stabilizing vitamin cofactor", "The inorganic mineral of bone matrix"], "answer": 1, "rationale": "RANK is expressed on osteoclast precursors and mature osteoclasts; binding with RANKL promotes osteoclast differentiation."}, {"question": "What is the main effect of RANKL binding to RANK?", "options": ["It blocks mineral deposition in osteoid", "It forms the bone's tensile framework", "It promotes differentiation, survival, and activity of osteoclasts", "It causes scoliosis curvature measurement"], "answer": 2, "rationale": "RANKL binds RANK on osteoclast precursors and initiates differentiation into mature osteoclasts while enhancing mature osteoclast survival and activity."}, {"question": "How do estrogen and testosterone affect OPG according to the document?", "options": ["They increase OPG production, promoting bone formation and inhibiting bone resorption", "They eliminate hydroxyapatite from the bone matrix", "They directly cause osteoclast fusion", "They convert osteocytes into erythrocytes"], "answer": 0, "rationale": "The document states that estrogen and testosterone increase OPG production, which promotes bone formation and inhibits bone resorption."}, {"question": "In inflammatory conditions such as rheumatoid arthritis, TNF-alpha can contribute to bone loss by doing what?", "options": ["Increasing osteocalcin only", "Increasing RANKL expression and promoting osteoclastogenesis", "Increasing the percentage of organic matrix to 65%", "Preventing all synovial inflammation"], "answer": 1, "rationale": "The document states that cytokines such as TNF-alpha can increase RANKL expression, promoting osteoclastogenesis and bone loss."}, {"question": "What are the approximate organic and inorganic proportions of the bone matrix?", "options": ["65% organic and 35% inorganic", "90% organic and 10% inorganic", "35% organic and 65% inorganic", "25% organic and 30% inorganic"], "answer": 2, "rationale": "The document describes bone matrix as approximately 35% organic components and 65% inorganic components."}, {"question": "What is the main organic protein in bone matrix and what does it provide?", "options": ["Hydroxyapatite; rigidity and hardness", "RANKL; osteoclast receptor activation", "OPG; decoy receptor action", "Type I collagen; tensile strength and flexibility"], "answer": 3, "rationale": "Type I collagen is about 90% of the organic matrix and provides tensile strength and flexibility."}, {"question": "What is the primary inorganic component of bone matrix?", "options": ["Hydroxyapatite", "Sclerostin", "Osteocalcin", "Hyaline cartilage"], "answer": 0, "rationale": "The primary inorganic component is hydroxyapatite, a crystalline calcium phosphate mineral that gives bone rigidity and compressive strength."}, {"question": "Which sequence correctly lists the five phases of bone remodeling?", "options": ["Activation, quiescence, mineralization, resorption, formation", "Quiescent, activation, resorption, formation, mineralization", "Formation, activation, quiescence, mineralization, resorption", "Resorption, quiescence, activation, mineralization, formation"], "answer": 1, "rationale": "The document lists bone remodeling as a five-phase cyclical process: quiescent, activation, resorption, formation, and mineralization."}, {"question": "What characterizes the quiescent phase of bone remodeling?", "options": ["Osteoclasts release acid to form resorption pits", "Osteoblasts fill cavities with osteoid", "The bone surface is stable and inactive while osteocytes maintain the matrix", "Hydroxyapatite is deposited into osteoid"], "answer": 2, "rationale": "In the quiescent phase, the bone surface is stable and inactive, with osteocytes maintaining the matrix and minimal osteoblast/osteoclast activity."}, {"question": "What occurs during the activation phase of bone remodeling?", "options": ["The final mineral crystals are fully mature", "Old bone is completely replaced by scar tissue", "The spine is measured by Cobb angle", "Signals recruit pre-osteoclasts and RANKL helps drive osteoclast differentiation"], "answer": 3, "rationale": "During activation, osteoblasts and osteocytes signal remodeling needs; pre-osteoclasts are recruited and RANKL binds RANK to promote osteoclast differentiation."}, {"question": "Which phase of bone remodeling involves osteoclasts forming resorption pits or cavities?", "options": ["Resorption phase", "Formation phase", "Quiescent phase", "Mineralization phase"], "answer": 0, "rationale": "The resorption phase is when osteoclasts actively break down old or damaged bone, creating pits or cavities."}, {"question": "What occurs during the formation phase of bone remodeling?", "options": ["Osteocytes stop all signaling permanently", "Osteoblasts migrate into resorption pits and synthesize new osteoid", "OPG becomes the primary inorganic bone mineral", "Dystrophin anchors muscle fibers to extracellular matrix"], "answer": 1, "rationale": "In the formation phase, osteoblasts migrate into resorption pits and synthesize new bone matrix, initially as unmineralized osteoid."}, {"question": "What occurs during the mineralization phase?", "options": ["Rheumatoid pannus invades cartilage", "Vitamin C deficiency causes scurvy", "Hydroxyapatite is deposited into osteoid, transforming it into mature bone", "HLA-B27 causes low back pain directly"], "answer": 2, "rationale": "Mineralization involves calcium and phosphate deposition, primarily as hydroxyapatite, into osteoid to form mature bone."}, {"question": "What is the key role of vitamin D in bone growth?", "options": ["It causes Type IV hypersensitivity", "It produces B cells in marrow", "It forms the Cobb angle", "It supports intestinal absorption of calcium and phosphate needed for mineralization"], "answer": 3, "rationale": "Vitamin D is essential for intestinal absorption of calcium and phosphate, both required for proper bone mineralization."}, {"question": "Which diagnoses are associated with vitamin D deficiency in the document?", "options": ["Rickets in children and osteomalacia in adults", "Scurvy in children and adults", "Spondylitis and scoliosis", "Duchenne muscular dystrophy and sarcopenia"], "answer": 0, "rationale": "Vitamin D deficiency is associated with rickets in children and osteomalacia in adults."}, {"question": "What is vitamin C's key role in bone matrix formation?", "options": ["It creates RANKL on osteoclasts", "It acts as a cofactor in type I collagen synthesis", "It directly fuses vertebral joints", "It replaces hydroxyapatite as the inorganic matrix"], "answer": 1, "rationale": "Vitamin C is a critical cofactor in collagen synthesis, especially type I collagen, which is the primary organic component of bone matrix."}, {"question": "Which condition is associated with vitamin C deficiency?", "options": ["Osteomalacia", "Ankylosing spondylitis", "Scurvy", "Duchenne muscular dystrophy"], "answer": 2, "rationale": "The document states that vitamin C deficiency leads to scurvy, with impaired collagen synthesis and weakened connective tissues."}, {"question": "What antigen is strongly associated with ankylosing spondylitis in approximately 90% of patients?", "options": ["HLA-DR4", "ANA", "RF", "HLA-B27"], "answer": 3, "rationale": "The document states that approximately 90% of patients with ankylosing spondylitis express HLA-B27."}, {"question": "What is the key pathophysiologic process in spondylitis described in the document?", "options": ["Loss of articular cartilage with osteophytes only", "Chronic inflammation of spinal fibrocartilage leading to erosion, scar formation, calcification, and joint fusion", "Decreased protein intake causing muscle wasting", "Antibody production by plasma cells against toxins"], "answer": 1, "rationale": "Spondylitis involves chronic inflammation of spinal fibrocartilage, erosion, repair/scar tissue, calcification, and possible vertebral joint fusion."}, {"question": "What is a common early clinical presentation of ankylosing spondylitis?", "options": ["Postmenopausal bleeding", "Bone fractures after minimal trauma", "Low back pain and stiffness beginning in the early 20s", "Cold sores along dermatomes"], "answer": 2, "rationale": "The document describes low back pain, often beginning in the early 20s, with stiffness and pain after rest as an early presentation."}, {"question": "What is the hallmark pathophysiologic feature of osteoarthritis?", "options": ["T-cell mediated pannus formation", "Genetic dystrophin mutation", "Spinal fibrocartilage fusion", "Degeneration and loss of articular cartilage"], "answer": 3, "rationale": "Osteoarthritis is characterized by local degeneration and gradual loss of articular cartilage."}, {"question": "Which clinical pattern best matches osteoarthritis in the document?", "options": ["Pain worsens with activity and stiffness diminishes with activity", "Morning stiffness longer than 30 minutes with symmetric small-joint involvement", "Early low back pain worse after prolonged inactivity only", "Loss of muscle mass primarily due to aging"], "answer": 0, "rationale": "OA pain typically worsens with movement or weight-bearing activity, while stiffness after inactivity often improves with gentle movement."}, {"question": "Which pathophysiologic features are associated with osteoarthritis?", "options": ["Pannus formation, RF, and ANA only", "Pro-inflammatory cytokines, joint capsule thickening, osteophytes, and variable synovitis", "Dystrophin loss, calcium overload, and fatty infiltration", "Tubercles, caseation, and immune dormancy"], "answer": 1, "rationale": "The OA section lists pro-inflammatory cytokines, thickening of the joint capsule, osteophytes, and variable degrees of synovitis."}, {"question": "Which genetic association is emphasized for rheumatoid arthritis?", "options": ["HLA-B27", "HLA-B7", "HLA-DR4", "Dystrophin on chromosome X"], "answer": 2, "rationale": "RA is described as multifactorial with a strong genetic predisposition, particularly involving the HLA-DR4 allele."}, {"question": "What is the primary site of inflammation in rheumatoid arthritis?", "options": ["The scoliosis apex only", "The diaphysis of long bones", "The respiratory diaphragm", "The synovial membrane"], "answer": 3, "rationale": "The document states that the primary site of inflammation in RA is the synovial membrane."}, {"question": "What immune mechanism is described in rheumatoid arthritis?", "options": ["Type IV hypersensitivity mediated by T cells", "Purely mechanical wear without cytokines", "Only passive immunity from maternal antibodies", "Viral budding from epithelial cells"], "answer": 0, "rationale": "RA involves a Type IV hypersensitivity reaction, primarily T-cell mediated, with cytokines such as TNF-alpha contributing to inflammation."}, {"question": "What is pannus in rheumatoid arthritis?", "options": ["A crystalline mineral in bone matrix", "Granulation tissue that invades and erodes cartilage and bone", "A decoy receptor for RANKL", "The angle used to measure scoliosis"], "answer": 1, "rationale": "Persistent RA inflammation leads to granulation tissue called pannus, which invades and erodes cartilage and bone."}, {"question": "Which blood work findings are mentioned in the diagnostic evaluation of rheumatoid arthritis?", "options": ["AFP and PSA", "BRCA1 and BRCA2", "Cobb angle and hydroxyapatite", "Rheumatoid factor and antinuclear antibodies"], "answer": 3, "rationale": "The document notes RF and ANA as blood work used in diagnostic evaluation, while also emphasizing they are not definitive/specific alone."}, {"question": "Which risk factor cluster is consistent with osteoporosis in the document?", "options": ["Aging, postmenopause with low estrogen, low vitamin D, decreased physical activity, glucocorticoids, low BMI, and family history", "HLA-DR4, pannus, symmetric MCP involvement, and ANA", "Dystrophin mutation, toe walking, and early teen wheelchair use", "Cobb angle, cerebral palsy, and muscular dystrophy only"], "answer": 0, "rationale": "The osteoporosis section lists these as major risk factors, along with excess caffeine/phosphorus/alcohol/nicotine and endocrine disorders."}, {"question": "What is the most significant clinical consequence of osteoporosis?", "options": ["Low back pain beginning in the early 20s", "Increased risk of spontaneous fractures, especially hip, spine, and wrist", "Cold-induced calcium overload", "Mucosal antibody production"], "answer": 1, "rationale": "The document identifies fractures—especially hip, spine, and wrist after minimal trauma—as the most significant clinical consequence."}, {"question": "How does decreased estrogen contribute to osteoporosis in the RANK/RANKL/OPG pathway?", "options": ["It increases OPG and blocks all RANKL", "It converts osteoclasts into osteoblasts", "It lowers OPG, permits higher RANKL/RANK signaling, and increases osteoclast activity", "It directly creates scoliosis"], "answer": 2, "rationale": "In postmenopausal osteoporosis, decreased estrogen lowers OPG production, reduces inhibition of RANKL, and increases osteoclast formation/activity."}, {"question": "What is scoliosis?", "options": ["A type of autoimmune synovitis", "Age-related muscle loss", "Fibrous replacement of muscle", "An abnormal lateral curvature of the spine that may appear C-shaped or S-shaped"], "answer": 3, "rationale": "Scoliosis is defined as abnormal lateral curvature of the spine, which can curve left or right and appear C-shaped or S-shaped."}, {"question": "What measurement method is used to assess scoliosis severity?", "options": ["Cobb angle on radiographic imaging", "RANKL level in serum", "Alkaline phosphatase and osteocalcin only", "RF and ANA"], "answer": 0, "rationale": "The document states that scoliosis severity is commonly measured radiographically using the Cobb angle."}, {"question": "Which scoliosis curvature range may be managed with bracing in growing individuals?", "options": ["Less than 20 degrees", "Greater than 30 to 40 degrees", "Exactly 90% of patients", "35% to 65%"], "answer": 1, "rationale": "The document states that curvatures greater than 30 to 40 degrees may be treated with a brace in growing individuals."}, {"question": "Which scoliosis curvature range is classified as severe and often requires surgical correction?", "options": ["20 to 25 degrees", "25 to 30 degrees", "Greater than 45 to 50 degrees", "Less than 20 degrees"], "answer": 2, "rationale": "Curvatures greater than 45 to 50 degrees are classified as severe and often require surgical correction."}, {"question": "In which conditions is scoliosis more likely to manifest as a secondary complication?", "options": ["Osteomalacia and scurvy", "Rheumatoid arthritis and osteoarthritis", "Rickets and osteoporosis only", "Muscular dystrophy and cerebral palsy"], "answer": 3, "rationale": "The document specifically states that scoliosis is more likely in muscular dystrophy and cerebral palsy due to weakness or abnormal muscle function affecting alignment."}, {"question": "What general pathophysiologic sequence is associated with muscular dystrophy?", "options": ["Genetic mutations disrupt muscle proteins, leading to fiber dropout, apoptosis/necrosis, inflammation, failed regeneration, fibrosis/fatty replacement, and loss of function", "OPG binds RANKL and prevents osteoclast activation", "Hydroxyapatite deposits into osteoid and completes remodeling", "Cobb angle progresses from 20 to 25 degrees"], "answer": 0, "rationale": "The muscular dystrophy section describes mutations disrupting key muscle proteins, followed by muscle fiber damage/dropout, cell death, inflammation, failed regeneration, fibrosis, fatty infiltration, and loss of function."}, {"question": "What causes Duchenne muscular dystrophy according to the document?", "options": ["A postmenopausal decrease in estrogen", "A mutation in the dystrophin gene located on the X chromosome", "A thickened joint capsule with osteophytes", "A high OPG-to-RANKL ratio"], "answer": 1, "rationale": "DMD is caused by mutations in the dystrophin gene on the X chromosome and primarily affects boys."}, {"question": "Why are muscle fibers vulnerable in Duchenne muscular dystrophy?", "options": ["Because type I collagen becomes too flexible", "Because the Cobb angle exceeds 25 degrees", "Because absent or dysfunctional dystrophin leaves muscle fibers poorly anchored and vulnerable to injury during contraction", "Because RANKL is blocked by excess OPG"], "answer": 2, "rationale": "Dystrophin anchors the muscle cell membrane to the cytoskeleton/extracellular matrix. Without functional dystrophin, fibers tear more easily during contraction."}, {"question": "Which early signs are associated with Duchenne muscular dystrophy?", "options": ["Postmenopausal bleeding and pelvic pressure", "Symmetric MCP swelling and rheumatoid nodules", "Hyperkyphosis from spontaneous vertebral fractures", "Hip/pelvis/leg weakness, difficulty standing or walking, waddling gait, toe walking, and frequent falls"], "answer": 3, "rationale": "The DMD section lists early weakness in the hips, pelvis, and legs; difficulty standing/walking; waddling gait; toe walking; and frequent falls."}, {"question": "How does Duchenne muscular dystrophy commonly progress over time?", "options": ["Loss of independent mobility with possible cardiac and respiratory muscle involvement", "Permanent resolution after vitamin C replacement", "Only mild rash and joint capsule thickening", "Immediate spinal fusion in early 20s"], "answer": 0, "rationale": "DMD progression includes loss of mobility, wheelchair use by early teens in many boys, and involvement of cardiac and respiratory muscles."}, {"question": "What is sarcopenia?", "options": ["Inflammation of spinal fibrocartilage", "Age-related loss of muscle mass, strength, and function", "A decoy receptor for RANKL", "A genetic mutation in dystrophin"], "answer": 1, "rationale": "Sarcopenia is defined as age-related loss of muscle mass, strength, and function."}, {"question": "Which clinical consequences are associated with sarcopenia?", "options": ["Cobb angle and bamboo spine", "Scurvy and rickets only", "Pannus and subcutaneous nodules", "Muscle weakness, decreased mobility, increased fall risk, disability, and loss of independence"], "answer": 3, "rationale": "The document states that sarcopenia leads to muscle weakness, decreased mobility, increased risk of falls, disability, and loss of independence."}];
+    const storageKey = "module3_musculoskeletal_quiz_v1";
+    let current = 0;
+    let answers = Array(questions.length).fill(null);
+
+    function load() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
+        if (Array.isArray(saved.answers) && saved.answers.length === questions.length) {
+          answers = saved.answers;
+        }
+        if (Number.isInteger(saved.current) && saved.current >= 0 && saved.current < questions.length) {
+          current = saved.current;
+        }
+      } catch (e) {}
+    }
+
+    function save() {
+      localStorage.setItem(storageKey, JSON.stringify({ answers, current }));
+    }
+
+    function letter(i) {
+      return ["A", "B", "C", "D"][i];
+    }
+
+    function renderQuestion() {
+      const q = questions[current];
+      document.getElementById("qNumber").textContent = `Question ${current + 1} of ${questions.length}`;
+      const chosen = answers[current];
+      document.getElementById("qStatus").textContent = chosen === null ? "Not answered" : (chosen === q.answer ? "Answered correctly" : "Answered incorrectly");
+      document.getElementById("questionText").textContent = q.question;
+
+      const choices = document.getElementById("choices");
+      choices.innerHTML = "";
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "choice";
+        btn.innerHTML = `<span class="letter">${letter(idx)}.</span>${escapeHtml(opt)}`;
+        btn.disabled = chosen !== null;
+        if (chosen !== null) {
+          if (idx === q.answer) btn.classList.add("correct");
+          if (idx === chosen && chosen !== q.answer) btn.classList.add("incorrect");
+        }
+        btn.addEventListener("click", () => selectAnswer(idx));
+        choices.appendChild(btn);
+      });
+
+      const fb = document.getElementById("feedback");
+      if (chosen === null) {
+        fb.className = "feedback";
+        fb.innerHTML = "";
+      } else {
+        const isCorrect = chosen === q.answer;
+        fb.className = "feedback " + (isCorrect ? "good" : "bad");
+        fb.innerHTML = `
+          <h3>${isCorrect ? "Correct" : "Incorrect"}</h3>
+          <p><strong>Correct answer:</strong> ${letter(q.answer)}. ${escapeHtml(q.options[q.answer])}</p>
+          <p><strong>Rationale:</strong> ${escapeHtml(q.rationale)}</p>
+        `;
+      }
+
+      document.getElementById("prevBtn").disabled = current === 0;
+      document.getElementById("nextBtn").disabled = current === questions.length - 1;
+      renderStats();
+      renderNav();
+      save();
+    }
+
+    function selectAnswer(idx) {
+      if (answers[current] !== null) return;
+      answers[current] = idx;
+      renderQuestion();
+    }
+
+    function renderStats() {
+      const answered = answers.filter(a => a !== null).length;
+      const correct = answers.reduce((acc, a, i) => acc + (a === questions[i].answer ? 1 : 0), 0);
+      const pct = answered === 0 ? 0 : Math.round((correct / answered) * 100);
+      document.getElementById("answeredCount").textContent = answered;
+      document.getElementById("remainingCount").textContent = questions.length - answered;
+      document.getElementById("scoreCount").textContent = correct;
+      document.getElementById("scorePct").textContent = `${pct}%`;
+      document.getElementById("progressBar").style.width = `${Math.round((answered / questions.length) * 100)}%`;
+    }
+
+    function renderNav() {
+      const nav = document.getElementById("navGrid");
+      nav.innerHTML = "";
+      questions.forEach((q, i) => {
+        const btn = document.createElement("button");
+        btn.className = "nav-btn";
+        btn.textContent = i + 1;
+        if (i === current) btn.classList.add("current");
+        if (answers[i] !== null) {
+          btn.classList.add(answers[i] === q.answer ? "done-correct" : "done-incorrect");
+        }
+        btn.addEventListener("click", () => {
+          current = i;
+          renderQuestion();
+        });
+        nav.appendChild(btn);
+      });
+    }
+
+    function renderAnswerKey() {
+      const key = document.getElementById("answerKey");
+      key.innerHTML = "";
+      questions.forEach((q, i) => {
+        const div = document.createElement("div");
+        div.className = "key-item";
+        div.innerHTML = `<strong>${i + 1}. ${letter(q.answer)}.</strong> ${escapeHtml(q.options[q.answer])}<br><span>${escapeHtml(q.rationale)}</span>`;
+        key.appendChild(div);
+      });
+    }
+
+    function firstUnanswered() {
+      const idx = answers.findIndex(a => a === null);
+      if (idx !== -1) {
+        current = idx;
+        renderQuestion();
+      }
+    }
+
+    function resetQuiz() {
+      const ok = confirm("Reset all answers and start over?");
+      if (!ok) return;
+      answers = Array(questions.length).fill(null);
+      current = 0;
+      localStorage.removeItem(storageKey);
+      renderQuestion();
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      if (current > 0) {
+        current--;
+        renderQuestion();
+      }
+    });
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      if (current < questions.length - 1) {
+        current++;
+        renderQuestion();
+      }
+    });
+    document.getElementById("firstUnansweredBtn").addEventListener("click", firstUnanswered);
+    document.getElementById("resetBtn").addEventListener("click", resetQuiz);
+
+    load();
+    renderQuestion();
+    renderAnswerKey();
+  </script>
+</body>
+</html>

@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 4 Infections Interactive Practice Quiz</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --ink: #172033;
+      --muted: #64748b;
+      --line: #dbe3ef;
+      --accent: #1f5eff;
+      --accent-soft: #eaf0ff;
+      --good: #0f7a3b;
+      --good-bg: #e8f7ee;
+      --bad: #b42318;
+      --bad-bg: #fff0ee;
+      --warn-bg: #fff8e6;
+      --shadow: 0 14px 40px rgba(15, 23, 42, 0.10);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at top left, #eef4ff, var(--bg) 42%);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    .wrap { width: min(1040px, 100%); margin: 0 auto; padding: 18px; }
+    header {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      margin: 10px 0 16px;
+    }
+    h1 { margin: 0 0 8px; font-size: clamp(1.45rem, 4vw, 2.15rem); line-height: 1.1; }
+    .sub { color: var(--muted); margin: 0; font-size: 0.98rem; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 16px; }
+    .stat { border: 1px solid var(--line); border-radius: 14px; padding: 11px 12px; background: #fbfdff; }
+    .stat b { display:block; font-size: 1.25rem; }
+    .stat span { color: var(--muted); font-size: 0.82rem; }
+    .progress-shell { height: 12px; background: #e7edf7; border-radius: 99px; overflow: hidden; margin-top: 14px; }
+    .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), #5b8cff); transition: width 180ms ease; }
+    main { display: grid; grid-template-columns: 1fr 250px; gap: 16px; align-items: start; }
+    .card, .side { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .card { padding: 22px; }
+    .eyebrow { color: var(--accent); font-weight: 700; letter-spacing: .02em; font-size: .86rem; margin-bottom: 8px; }
+    .question { font-size: clamp(1.08rem, 3.5vw, 1.35rem); font-weight: 750; margin: 0 0 18px; }
+    .choices { display: grid; gap: 10px; }
+    .choice {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      color: var(--ink);
+      padding: 14px 14px;
+      font-size: 0.98rem;
+      cursor: pointer;
+      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .choice:hover:not(:disabled) { transform: translateY(-1px); border-color: var(--accent); background: var(--accent-soft); }
+    .choice:disabled { cursor: default; opacity: 0.95; }
+    .letter {
+      flex: 0 0 auto;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: #edf2f7;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: .84rem;
+    }
+    .choice.correct { border-color: #74c69d; background: var(--good-bg); }
+    .choice.correct .letter { background: var(--good); color:#fff; }
+    .choice.incorrect { border-color: #ffb4aa; background: var(--bad-bg); }
+    .choice.incorrect .letter { background: var(--bad); color:#fff; }
+    .feedback { margin-top: 16px; padding: 15px; border-radius: 14px; border: 1px solid var(--line); display: none; }
+    .feedback.good { display:block; background: var(--good-bg); border-color: #bfe8cd; }
+    .feedback.bad { display:block; background: var(--bad-bg); border-color: #ffc7c0; }
+    .feedback h3 { margin: 0 0 6px; font-size: 1.05rem; }
+    .feedback p { margin: 6px 0 0; }
+    .controls { display:flex; justify-content: space-between; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+    button.control {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 15px;
+      font-weight: 750;
+      cursor: pointer;
+      background: var(--ink);
+      color: #fff;
+    }
+    button.control.secondary { background: #e8eef7; color: var(--ink); }
+    button.control:disabled { opacity: .45; cursor: not-allowed; }
+    .side { padding: 16px; position: sticky; top: 12px; }
+    .side h2 { font-size: 1rem; margin: 0 0 10px; }
+    .grid { display:grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .navbtn {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 0;
+      background: #fff;
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .navbtn.current { outline: 2px solid var(--accent); background: var(--accent-soft); }
+    .navbtn.answered.correct { background: var(--good-bg); border-color: #9bd8b4; color: var(--good); }
+    .navbtn.answered.incorrect { background: var(--bad-bg); border-color: #ffa79d; color: var(--bad); }
+    .side-actions { display:grid; gap: 8px; margin-top: 14px; }
+    .smallbtn { border: 1px solid var(--line); background: #fff; color: var(--ink); padding: 10px 12px; border-radius: 12px; cursor: pointer; font-weight: 700; }
+    details { margin-top: 16px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; }
+    summary { cursor: pointer; font-weight: 800; }
+    .answer-key { margin-top: 12px; display:grid; gap: 10px; }
+    .key-item { border-top: 1px solid var(--line); padding-top: 10px; }
+    .key-item b { display:block; margin-bottom:4px; }
+    .source-note { margin-top: 12px; font-size: .86rem; color: var(--muted); }
+    @media (max-width: 760px) {
+      .wrap { padding: 10px; }
+      header, .card, .side, details { border-radius: 15px; }
+      main { grid-template-columns: 1fr; }
+      .side { position: static; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .grid { grid-template-columns: repeat(10, 1fr); }
+      .choice { padding: 13px 12px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .card, .side, header .stats, .progress-shell, .controls, .side-actions { display: none !important; }
+      main { display:block; }
+      header, details { box-shadow: none; border: 0; }
+      details { display: block; }
+      details > summary { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Module 4 Infections Interactive Practice Quiz</h1>
+      <p class="sub">50 multiple-choice questions based only on <strong>Module4Infections.docx</strong>. Immediate feedback appears after each answer.</p>
+      <div class="stats">
+        <div class="stat"><b id="answeredStat">0</b><span>Answered</span></div>
+        <div class="stat"><b id="correctStat">0</b><span>Correct</span></div>
+        <div class="stat"><b id="scoreStat">0%</b><span>Score</span></div>
+        <div class="stat"><b id="remainingStat">50</b><span>Remaining</span></div>
+      </div>
+      <div class="progress-shell" aria-label="Quiz progress"><div class="progress-bar" id="progressBar"></div></div>
+      <p class="source-note">Study mode: answer choices lock after selection. Use Reset Progress to start over.</p>
+    </header>
+
+    <main>
+      <section class="card" aria-live="polite">
+        <div class="eyebrow" id="eyebrow">Question 1 of 50</div>
+        <p class="question" id="questionText"></p>
+        <div class="choices" id="choices"></div>
+        <div class="feedback" id="feedback"></div>
+        <div class="controls">
+          <button class="control secondary" id="prevBtn">Previous</button>
+          <button class="control" id="nextBtn">Next</button>
+        </div>
+      </section>
+
+      <aside class="side">
+        <h2>Question Navigator</h2>
+        <div class="grid" id="navigator"></div>
+        <div class="side-actions">
+          <button class="smallbtn" id="resetBtn">Reset Progress</button>
+          <button class="smallbtn" onclick="window.print()">Print Answer Key</button>
+        </div>
+      </aside>
+    </main>
+
+    <details id="answerKeyDetails">
+      <summary>Printable answer key</summary>
+      <div class="answer-key" id="answerKey"></div>
+    </details>
+  </div>
+
+  <script>
+    const questions = [
+  {
+    "q": "Which pairing correctly distinguishes communicability from infectivity?",
+    "choices": [
+      "Communicability is the ability of a disease to be transmitted between individuals; infectivity is the ability of a pathogen to establish infection in a host.",
+      "Communicability is the ability to produce toxins; infectivity is the route a pathogen uses to enter the body.",
+      "Communicability is the usual prevalence of a disease in a region; infectivity is a sudden increase above expected cases.",
+      "Communicability is the severity of disease; infectivity is the ability to elicit an immune response."
+    ],
+    "correct": 0,
+    "rationale": "The document defines communicability as transmission from one individual to another and infectivity as the pathogen's ability to establish infection in a host."
+  },
+  {
+    "q": "Which concept describes the ability of a pathogen to produce toxins that contribute to disease?",
+    "choices": [
+      "Immunogenicity",
+      "Virulence",
+      "Toxigenicity",
+      "Pathogenicity"
+    ],
+    "correct": 2,
+    "rationale": "Toxigenicity is specifically the ability of a pathogen to produce toxins. The document gives Clostridium botulinum and botulinum toxin as an example."
+  },
+  {
+    "q": "Which statement best matches the document's outbreak/endemic/epidemic/pandemic definitions?",
+    "choices": [
+      "An endemic disease is one that spreads over multiple countries or continents.",
+      "A pandemic is an epidemic that has spread over multiple countries or continents and usually affects many people.",
+      "An epidemic is the constant presence of disease within a geographic area.",
+      "An outbreak is the route by which a pathogen enters the host's body."
+    ],
+    "correct": 1,
+    "rationale": "The document defines pandemic as an epidemic that has spread over multiple countries or continents. Endemic means constant presence/usual prevalence, outbreak is sudden increase, and portal of entry is the route into the host."
+  },
+  {
+    "q": "During infection progression, which stage is defined as the entry of the pathogen into the host's body?",
+    "choices": [
+      "Colonization",
+      "Multiplication",
+      "Host response",
+      "Transmission, also called invasion or penetration"
+    ],
+    "correct": 3,
+    "rationale": "The document lists transmission/invasion/penetration as the entry of the pathogen into the host through portals such as respiratory, gastrointestinal, urogenital tract, skin, and mucous membranes."
+  },
+  {
+    "q": "Which sequence best reflects the document's infection progression after colonization begins?",
+    "choices": [
+      "Multiplication, spread and tissue damage, host response, resolution or chronic disease, convalescence",
+      "Convalescence, pathogen entry, multiplication, prodrome, resolution",
+      "Antigenic drift, multiplication, endemic spread, host response, convalescence",
+      "Latency, antigenic shift, tissue repair, acute HIV, resolution"
+    ],
+    "correct": 0,
+    "rationale": "After entry and colonization, the document describes multiplication, spread and tissue damage, host response, resolution or chronic disease, and convalescence."
+  },
+  {
+    "q": "Which clinical stage of infection has nonspecific symptoms such as mild fever, malaise, fatigue, headache, fever, and malaise while pathogen load continues to increase?",
+    "choices": [
+      "Incubation period",
+      "Prodrome period",
+      "Period of decline",
+      "Period of convalescence"
+    ],
+    "correct": 1,
+    "rationale": "The prodrome period is the initial stage of illness with nonspecific and often mild symptoms while pathogen load continues to increase and the immune system begins to respond."
+  },
+  {
+    "q": "Which clinical stage is associated with peak pathogen load and the most severe, disease-specific symptoms?",
+    "choices": [
+      "Incubation period",
+      "Period of decline",
+      "Period of convalescence",
+      "Period of illness, also called invasion or acute illness"
+    ],
+    "correct": 3,
+    "rationale": "The period of illness is where the disease is most severe, specific symptoms are evident, and pathogen load is at its peak."
+  },
+  {
+    "q": "Which statement correctly describes the period of decline and period of convalescence?",
+    "choices": [
+      "During decline, pathogen load peaks; during convalescence, symptoms first become nonspecific.",
+      "During decline, pathogens enter the host; during convalescence, pathogen load gradually increases.",
+      "During decline, symptoms begin to subside and pathogen load decreases; during convalescence, the body repairs damage and returns toward normal health.",
+      "During decline, the infection becomes fulminant; during convalescence, the infection becomes chronic."
+    ],
+    "correct": 2,
+    "rationale": "The document states that decline occurs as symptoms subside and pathogen load decreases. Convalescence is the recovery phase, when tissues are repaired and normal health gradually returns."
+  },
+  {
+    "q": "Which definition matches a subclinical infection?",
+    "choices": [
+      "A rapid onset infection with short duration and pronounced symptoms",
+      "An infection present without noticeable symptoms, where the individual may still carry and transmit disease",
+      "An infection with little or no prodrome where the person becomes very ill very quickly",
+      "An infection that persists for long periods, sometimes for life"
+    ],
+    "correct": 1,
+    "rationale": "Subclinical infection is present but does not cause noticeable symptoms. The document notes that individuals can still be carriers and transmit disease."
+  },
+  {
+    "q": "Which bacterial structure is described as providing structural integrity and being an antibiotic target such as for penicillin?",
+    "choices": [
+      "Cell wall",
+      "Pilus",
+      "Flagella",
+      "Nucleoid"
+    ],
+    "correct": 0,
+    "rationale": "The bacterial cell wall provides structural integrity and is made of peptidoglycan in many bacteria. The document notes it is important for antibiotic targeting, such as penicillin targeting cell wall synthesis."
+  },
+  {
+    "q": "Which bacterial feature is described as a protective matrix that shields bacteria from host immunity and antibiotics?",
+    "choices": [
+      "Ribosome",
+      "Capsid",
+      "Biofilm",
+      "Cytoplasm"
+    ],
+    "correct": 2,
+    "rationale": "The document defines biofilms as protective matrices secreted by bacteria that shield them from the host immune system and antibiotics."
+  },
+  {
+    "q": "Which description matches the document's general viral replication process?",
+    "choices": [
+      "Viruses reproduce by binary fission and form peptidoglycan cell walls.",
+      "Viruses produce exotoxins during bacterial growth and metabolism.",
+      "Viruses grow as unicellular yeasts or multicellular molds depending on conditions.",
+      "Viruses attach to host cell receptors, enter, uncoat, replicate nucleic acids, assemble new virions, and release."
+    ],
+    "correct": 3,
+    "rationale": "The document lists viral replication as attachment and entry, uncoating, replication, assembly, and release from the host cell."
+  },
+  {
+    "q": "Which fungal structure is identified as a target for antifungal drugs?",
+    "choices": [
+      "Lipopolysaccharide in the outer membrane",
+      "Ergosterol in the plasma membrane",
+      "Peptidoglycan in the cell wall",
+      "Capsid surrounding the nucleic acid core"
+    ],
+    "correct": 1,
+    "rationale": "The fungal plasma membrane contains ergosterol, which the document identifies as a target for antifungal drugs."
+  },
+  {
+    "q": "Which summary statement correctly contrasts bacteria, viruses, and fungi as described in the module?",
+    "choices": [
+      "Bacteria use structures, enzymes, and toxins; viruses hijack host machinery; fungi can be opportunistic eukaryotes causing direct and indirect tissue damage.",
+      "Bacteria are obligate intracellular pathogens; viruses are eukaryotic opportunists; fungi rely on endotoxin LPS.",
+      "Bacteria cause disease only through latency; viruses cause disease only through biofilms; fungi cause disease only through antigenic drift.",
+      "Bacteria are always harmless biome organisms; viruses are multicellular molds; fungi are prokaryotes with peptidoglycan."
+    ],
+    "correct": 0,
+    "rationale": "The document summarizes bacteria as using structural components, enzymes, toxins, and biofilms; viruses as obligate intracellular pathogens that hijack host machinery; and fungi as eukaryotic organisms that may be opportunistic and cause direct or inflammatory damage."
+  },
+  {
+    "q": "Which description matches Gram-positive bacteria?",
+    "choices": [
+      "They do not retain crystal violet and appear red or pink because of an outer membrane with LPS.",
+      "They retain carbol fuchsin dye and resist decolorization by acid-alcohol.",
+      "They take up crystal violet and appear purple, with a thick peptidoglycan layer and teichoic acids.",
+      "They cannot grow in oxygen and commonly cause foul-smelling deep tissue abscesses."
+    ],
+    "correct": 2,
+    "rationale": "Gram-positive bacteria retain crystal violet and appear purple. Their cell wall is predominantly a thick peptidoglycan layer with teichoic acids."
+  },
+  {
+    "q": "Which clinical effects are specifically linked to Gram-negative endotoxin release in the module?",
+    "choices": [
+      "Cold sores, genital herpes, and shingles",
+      "Oral thrush, vaginal yeast infection, and disseminated candidiasis",
+      "Maculopapular rash, Koplik's spots, and congenital rubella syndrome",
+      "Fever, disseminated intravascular coagulation, and septic shock"
+    ],
+    "correct": 3,
+    "rationale": "The Gram-negative section states that endotoxins from LPS can trigger severe immune responses and that fever, DIC, and septic shock are more common with Gram-negative infections."
+  },
+  {
+    "q": "Which organisms are listed as acid-fast bacilli with thick lipid-rich cell walls and chronic infection patterns?",
+    "choices": [
+      "Mycobacterium tuberculosis and Mycobacterium leprae",
+      "Staphylococcus aureus and Escherichia coli",
+      "Candida albicans and Histoplasma capsulatum",
+      "Influenza virus and coronavirus"
+    ],
+    "correct": 0,
+    "rationale": "The document identifies Mycobacterium tuberculosis and Mycobacterium leprae as acid-fast bacilli with thick lipid-rich cell walls, slow growth, and chronic infections such as TB and leprosy."
+  },
+  {
+    "q": "Which statement correctly matches oxygen requirement classification with clinical manifestations?",
+    "choices": [
+      "Aerobic bacteria do not grow in oxygen and commonly cause foul-smelling abscesses.",
+      "Facultative anaerobes can grow with or without oxygen and can cause infections such as UTIs and wound infections.",
+      "Anaerobic bacteria need oxygen and usually cause only viral respiratory infections.",
+      "Acid-fast bacilli are classified by oxygen need only and do not require prolonged therapy."
+    ],
+    "correct": 1,
+    "rationale": "The document states that facultative anaerobes can grow with or without oxygen; examples include Escherichia coli and Staphylococcus aureus, with manifestations such as UTIs and wound infections."
+  },
+  {
+    "q": "Which statement best describes endotoxins?",
+    "choices": [
+      "They are actively secreted proteins from both Gram-positive and Gram-negative bacteria and often target specific cells.",
+      "They are fungal plasma membrane sterols that serve as antifungal targets.",
+      "They are viral surface changes caused by antigenic drift.",
+      "They are components of Gram-negative outer membranes, especially LPS/lipid A, released mainly with bacterial death, wall breakdown, or division."
+    ],
+    "correct": 3,
+    "rationale": "Endotoxins are described as components of the outer membrane of Gram-negative bacteria, especially LPS/lipid A, released mainly when bacteria die and the cell wall breaks apart or during cell division."
+  },
+  {
+    "q": "Which statement best describes exotoxins?",
+    "choices": [
+      "They are LPS components of Gram-negative walls that are released only during lysis.",
+      "They are phagolysosome structures formed by macrophages during tuberculosis.",
+      "They are toxic proteins actively secreted during bacterial growth and metabolism by both Gram-positive and Gram-negative bacteria.",
+      "They are annual susceptibility summaries used for empiric antibiotic choices."
+    ],
+    "correct": 2,
+    "rationale": "The document defines exotoxins as toxic proteins actively secreted by both Gram-positive and Gram-negative bacteria during bacterial growth and metabolism."
+  },
+  {
+    "q": "Which treatment approach is specifically listed for exotoxin-mediated disease?",
+    "choices": [
+      "Antitoxins, such as botulinum antitoxin for botulism, along with antibiotics and supportive care",
+      "Avoiding all antibiotics because antibiotics only increase exotoxin release",
+      "Using an annual antibiogram as the only diagnostic test",
+      "Treating exclusively with antifungals targeting ergosterol"
+    ],
+    "correct": 0,
+    "rationale": "For exotoxins, the document lists antibiotics, antitoxins such as botulinum antitoxin, supportive care, and vaccines for prevention of some toxin-producing bacterial diseases."
+  },
+  {
+    "q": "Which description matches Staphylococcus aureus in the document?",
+    "choices": [
+      "It is transmitted by respiratory droplets, forms granulomas, and survives in phagolysosomes.",
+      "It is normally found in the GI tract and causes traveller's diarrhea and HUS in children.",
+      "It is found on skin and nasal passages, spreads by direct contact or contaminated objects, and can cause impetigo, abscesses, cellulitis, pneumonia, bacteremia, and endocarditis.",
+      "It is an RNA virus with types A, B, and C that binds epithelial cells in the throat and lungs."
+    ],
+    "correct": 2,
+    "rationale": "The Staphylococcus aureus section states it is commonly found on skin and in nasal passages, transmitted by direct contact or contaminated objects, and can cause skin infections and severe infections such as pneumonia, bacteremia, and endocarditis."
+  },
+  {
+    "q": "Which description matches Escherichia coli in the module?",
+    "choices": [
+      "It is a herpesvirus that becomes latent in dorsal root ganglia.",
+      "It is normally found in the GI tract, transmitted through contaminated food, water, or person-to-person contact, and can cause UTIs, traveller's diarrhea, and HUS in children.",
+      "It is a fungal organism that forms oral thrush and vaginal yeast infections.",
+      "It is an acid-fast bacillus that causes tuberculosis."
+    ],
+    "correct": 1,
+    "rationale": "The E. coli section describes GI tract colonization, transmission via contaminated food/water and person-to-person contact, and manifestations including UTIs, traveller's diarrhea, and HUS in children."
+  },
+  {
+    "q": "Which pathophysiologic feature is described for Mycobacterium tuberculosis?",
+    "choices": [
+      "It produces botulinum toxin and causes flaccid paralysis.",
+      "It forms a polysaccharide fungal cell wall with ergosterol in the membrane.",
+      "It binds to CD4 cells using GP120 and integrates RNA into host DNA.",
+      "It survives and grows within macrophages and phagolysosomes and can form granulomas/tubercles that may caseate and wall off infection."
+    ],
+    "correct": 3,
+    "rationale": "The TB section states that Mycobacterium tuberculosis survives and grows within macrophages and phagolysosomes, forms granulomas/tubercles, and can caseate and enter immune dormancy."
+  },
+  {
+    "q": "Which statement matches Candida albicans in the document?",
+    "choices": [
+      "It is normally part of the skin, GI tract, mouth, and vaginal microbiome and can cause thrush, vaginal yeast infections, or disseminated infection, especially opportunistically.",
+      "It is transmitted by respiratory droplets and causes Koplik's spots.",
+      "It is a Gram-negative rod whose LPS causes septic shock.",
+      "It is an antigenic shift variant that requires annual vaccine updates."
+    ],
+    "correct": 0,
+    "rationale": "Candida albicans is described as normally part of the human microbiome and as an opportunistic pathogen causing oral thrush, vaginal yeast infections, or disseminated infections."
+  },
+  {
+    "q": "Which statement reflects the document's general viral attributes?",
+    "choices": [
+      "Viruses are made of peptidoglycan and teichoic acid and divide by binary fission.",
+      "Viruses are small, consist of a nucleic acid core surrounded by a capsid, cannot survive without a host, and use host machinery to produce new virions.",
+      "Viruses have a polysaccharide cell wall and ergosterol-containing membrane.",
+      "Viruses are aerobic organisms that form foul-smelling abscesses."
+    ],
+    "correct": 1,
+    "rationale": "The general viral section states that viruses are small, have a nucleic acid core surrounded by a capsid, cannot survive without a host, and replicate using host cell machinery."
+  },
+  {
+    "q": "Which statement about coronavirus is taken from the document?",
+    "choices": [
+      "It is transmitted via oral saliva as HSV-1 and causes cold sores.",
+      "It is mainly found in West Africa as HIV-2 and binds CD4 cells using GP120.",
+      "It is transmitted via respiratory droplets, can be infectious 2-3 days before symptoms and up to 10 days after symptoms, and has higher risk for severe outcomes in people with multiple comorbidities.",
+      "It is caused by fungal dimorphism between mold and yeast forms."
+    ],
+    "correct": 2,
+    "rationale": "The coronavirus section notes respiratory droplet transmission, infectiousness 2-3 days before symptoms and up to 10 days after symptoms, and higher risk for severe outcomes with multiple comorbidities."
+  },
+  {
+    "q": "Which description matches influenza virus in the module?",
+    "choices": [
+      "It is a DNA virus with HSV-1 and HSV-2 forms that travels to dorsal root ganglia.",
+      "It is a bacterium that secretes hyaluronidase to break down extracellular matrix.",
+      "It is a fungal opportunist that forms biofilms on cell walls.",
+      "It is an RNA virus with types A, B, and C, spreads by respiratory droplets, and causes fever, aches, and fatigue due to pro-inflammatory cytokine and chemokine release."
+    ],
+    "correct": 3,
+    "rationale": "The influenza section identifies influenza as an RNA virus with types A, B, and C; spread by respiratory droplets; and associated with fever, aches, and fatigue due to cytokine and chemokine release."
+  },
+  {
+    "q": "Which statement correctly describes HSV and VZV from the document?",
+    "choices": [
+      "HSV-1 is associated with oral transmission by saliva and cold sores; HSV-2 is associated with genital transmission by mucous membrane contact; VZV causes chickenpox and may reactivate as shingles.",
+      "HSV-1 is transmitted through blood, HSV-2 is transmitted from mother to child, and both integrate RNA into host DNA.",
+      "HSV only causes congenital rubella syndrome and has no latency phase.",
+      "HSV is a Gram-negative bacterium that releases endotoxin during lysis."
+    ],
+    "correct": 0,
+    "rationale": "The HSV section states HSV-1 is orally transmitted via saliva and causes cold sores, HSV-2 is genital via mucous membrane contact, and VZV causes chickenpox with later reactivation as shingles."
+  },
+  {
+    "q": "Which statement correctly distinguishes rubeola from rubella in the module?",
+    "choices": [
+      "Rubeola is transmitted by blood, while rubella is transmitted only through animal bites.",
+      "Rubeola is associated with maculopapular rash and Koplik's spots; rubella has a mild rash but can cause congenital rubella syndrome if infection occurs in the first trimester.",
+      "Rubeola is a fungal infection, while rubella is a bacterial infection.",
+      "Rubeola causes vaginal yeast infection, while rubella causes traveller's diarrhea."
+    ],
+    "correct": 1,
+    "rationale": "The measles section says rubeola produces maculopapular rash and Koplik's spots, while rubella can cause a mild rash and congenital rubella syndrome with first-trimester infection."
+  },
+  {
+    "q": "Which statement matches the HIV pathophysiology described in the document?",
+    "choices": [
+      "HIV uses a peptidoglycan capsule to resist phagocytosis and produces LPS endotoxin.",
+      "HIV is mainly transmitted by contaminated food and water and causes hemolytic uremic syndrome in children.",
+      "HIV remains dormant in dorsal root ganglia and reactivates along dermatomes.",
+      "HIV has an envelope, GP120 proteins, and reverse transcriptase; it binds CD4 cells, integrates RNA into host DNA, and ongoing replication leads to CD4 cell loss."
+    ],
+    "correct": 3,
+    "rationale": "The HIV section describes an envelope, GP120 proteins, reverse transcriptase, binding to CD4 cells, RNA integration into host DNA, and ongoing CD4 cell loss through apoptosis or cytotoxic T-cell-mediated killing."
+  },
+  {
+    "q": "Which factor is listed as contributing to bacterial genetic adaptation and antibiotic resistance?",
+    "choices": [
+      "Only antigenic drift in influenza viruses",
+      "Only lack of oxygen in anaerobic bacteria",
+      "Mutation and horizontal gene transfer through plasmids, transposons, or bacteriophages, influenced by inappropriate antibiotic use and agricultural practices",
+      "Only the presence of ergosterol in the fungal plasma membrane"
+    ],
+    "correct": 2,
+    "rationale": "The document states that bacteria can acquire resistance through mutation and horizontal gene transfer, and that inappropriate antibiotic use and agricultural use contribute to genetic adaptation."
+  },
+  {
+    "q": "Which example matches antibiotic-degrading enzymes in the resistance section?",
+    "choices": [
+      "β-lactamases from bacteria such as E. coli and Klebsiella pneumoniae hydrolyzing the β-lactam ring of penicillins and cephalosporins",
+      "Tet proteins moving tetracycline out of E. coli",
+      "Modifying porin proteins to reduce aminoglycoside entry",
+      "Changing dihydropteroate synthase to bypass folic acid pathway blockage"
+    ],
+    "correct": 0,
+    "rationale": "The document gives β-lactamases as antibiotic-degrading enzymes that hydrolyze the β-lactam ring of antibiotics such as penicillins and cephalosporins."
+  },
+  {
+    "q": "Which example matches modification of an antibiotic target molecule?",
+    "choices": [
+      "Bacteria pumping tetracycline out through Tet proteins",
+      "MRSA altering penicillin-binding proteins, reducing β-lactam binding affinity",
+      "Gram-negative bacteria reducing antibiotic entry by modifying porins",
+      "Candida switching between yeast and mold forms"
+    ],
+    "correct": 1,
+    "rationale": "The module lists MRSA as an example of altered antibiotic target sites: changes in penicillin-binding proteins reduce binding affinity for β-lactam antibiotics."
+  },
+  {
+    "q": "Which resistance mechanism reduces intracellular antibiotic concentrations by actively expelling the drug from the bacterial cell?",
+    "choices": [
+      "Bypassed metabolic pathway",
+      "Antibiotic-altering enzyme",
+      "Efflux pump",
+      "Altered target site"
+    ],
+    "correct": 2,
+    "rationale": "Efflux pumps actively expel antibiotics out of the cell, reducing intracellular concentrations to sub-lethal levels. The document gives tetracycline resistance in E. coli as an example."
+  },
+  {
+    "q": "What is an antibiogram?",
+    "choices": [
+      "A viral load test used to confirm acute HIV when antibody testing is indeterminate",
+      "A staging tool that separates incubation, prodrome, illness, decline, and convalescence",
+      "A fungal test that detects ergosterol in Candida membranes",
+      "A laboratory-produced summary of bacterial strain susceptibility to antibiotics, usually compiled for a hospital or clinical setting"
+    ],
+    "correct": 3,
+    "rationale": "The document defines an antibiogram as a laboratory-produced summary of susceptibility of bacterial strains from clinical samples to various antibiotics, typically compiled annually for a hospital or clinical setting."
+  },
+  {
+    "q": "How does the document's E. coli example use an antibiogram to guide empiric therapy?",
+    "choices": [
+      "If E. coli is 80% susceptible to ceftriaxone and only 50% susceptible to ciprofloxacin, ceftriaxone is a better empirical choice.",
+      "If E. coli is 50% susceptible to ceftriaxone and 80% susceptible to ciprofloxacin, ceftriaxone is preferred.",
+      "Antibiograms are not used until after all culture and sensitivity results are final.",
+      "Antibiograms determine whether the infection is viral, fungal, or parasitic."
+    ],
+    "correct": 0,
+    "rationale": "The document's example states that if E. coli isolates are 80% susceptible to ceftriaxone and 50% susceptible to ciprofloxacin, ceftriaxone would be the better empirical choice."
+  },
+  {
+    "q": "Which limitation of antibiograms is listed in the document?",
+    "choices": [
+      "They only show individual patient variation and never aggregate data.",
+      "They provide aggregate population data and are usually updated annually, so they may not capture individual variation or the most current resistance trends.",
+      "They are updated hourly, so they cannot track annual trends.",
+      "They can only be used for fungal infections, not bacterial infections."
+    ],
+    "correct": 1,
+    "rationale": "The limitations section lists aggregate data, delayed annual updates, underrepresentation of niche pathogens, and local variability between settings such as ICU versus outpatient."
+  },
+  {
+    "q": "Which set lists the core goals of antibiotic stewardship programs from the document?",
+    "choices": [
+      "Increase broad-spectrum antibiotic use, lengthen therapy duration, and avoid cultures",
+      "Replace antibiograms with viral load testing and discontinue infection control",
+      "Decrease microbial resistance, optimize antibiotic use, improve patient outcomes, and reduce healthcare costs",
+      "Treat every fever with antibiotics and avoid reassessment"
+    ],
+    "correct": 2,
+    "rationale": "The document lists four stewardship goals: decrease microbial resistance, optimize antibiotic use, improve patient outcomes, and reduce healthcare costs."
+  },
+  {
+    "q": "Which stewardship strategy is specifically emphasized in the module?",
+    "choices": [
+      "Prescribe the longest possible antibiotic course to prevent relapse.",
+      "Use broad-spectrum antibiotics without cultures to avoid delays.",
+      "Reserve all narrow-spectrum antibiotics for viral infections.",
+      "Use guidelines and antibiograms, match the right drug to the right bug, use cultures to change or stop antibiotics, define duration intentionally, and monitor for C. diff."
+    ],
+    "correct": 3,
+    "rationale": "The stewardship strategy list includes using guidelines and antibiograms, right drug/right bug, cultures to change or stop therapy, intention with duration, and monitoring for Clostridioides difficile."
+  },
+  {
+    "q": "Which timeline defines hospital-acquired infection in the document?",
+    "choices": [
+      "It develops more than 48 hours after hospital admission or within 14 days after discharge; in long-term care, any infection during the stay.",
+      "Symptoms become evident before or within 48 hours of hospital admission only.",
+      "The infection is always acquired outside the healthcare setting.",
+      "Any infection with lower resistance and shorter treatment duration."
+    ],
+    "correct": 0,
+    "rationale": "The HAI section defines onset as more than 48 hours after admission or within 14 days after discharge, and any infection during a long-term care stay."
+  },
+  {
+    "q": "Which list contains examples of hospital-acquired infections from the document?",
+    "choices": [
+      "Cold sores, shingles, rubella, and influenza",
+      "CLABSI, CAUTI, VAP, and SSI",
+      "Oral thrush, vaginal candidiasis, dermatophytes, and dimorphic fungi",
+      "Incubation, prodrome, illness, and convalescence"
+    ],
+    "correct": 1,
+    "rationale": "The HAI examples listed are central line-associated bloodstream infection (CLABSI), catheter-associated urinary tract infection (CAUTI), ventilator-associated pneumonia (VAP), and surgical site infection (SSI)."
+  },
+  {
+    "q": "Which statement best describes community-acquired infections in the module?",
+    "choices": [
+      "They develop more than 48 hours after admission and are frequently multidrug-resistant by definition.",
+      "They include only infections occurring during long-term care stays.",
+      "They are acquired outside the healthcare setting, with symptoms evident before or within 48 hours of admission, and usually have fewer resistance mechanisms and shorter, narrower-spectrum treatment.",
+      "They are always caused by HIV-1 or HIV-2."
+    ],
+    "correct": 2,
+    "rationale": "The CAI section defines community-acquired infections as acquired outside healthcare settings, with symptoms before or within 48 hours of admission. They generally have fewer resistance mechanisms and often shorter, narrower-spectrum treatment."
+  },
+  {
+    "q": "Which prevention point is listed for CAUTI?",
+    "choices": [
+      "Daily readiness to extubate and subglottic secretion drainage",
+      "Proper surgical site preparation and antibiotic prophylaxis only",
+      "Use of carbol fuchsin dye and acid-alcohol resistance testing",
+      "Avoid unnecessary catheterization, use sterile insertion technique, maintain proper catheter care, and prefer straight cath over indwelling when possible"
+    ],
+    "correct": 3,
+    "rationale": "The CAUTI section lists avoiding unnecessary catheterization, sterile insertion, proper catheter care, and notes that straight cath is preferable over indwelling."
+  },
+  {
+    "q": "Which prevention measures are listed for ventilator-associated pneumonia?",
+    "choices": [
+      "Elevate the head of the bed, assess readiness to extubate daily, provide oral hygiene with chlorhexidine, and use subglottic secretion drainage",
+      "Avoid urinary catheterization and use sterile insertion technique",
+      "Use chlorhexidine skin antisepsis for central-line insertion only",
+      "Treat with botulinum antitoxin and DTaP vaccine"
+    ],
+    "correct": 0,
+    "rationale": "The VAP section lists head-of-bed elevation, daily readiness-to-extubate assessment, oral hygiene with chlorhexidine, and subglottic secretion drainage."
+  },
+  {
+    "q": "Which statement correctly distinguishes antigenic shift from antigenic drift?",
+    "choices": [
+      "Shift is the annual update of flu vaccine due to minor mutations; drift is sudden recombination of two strains.",
+      "Shift is sudden genetic recombination when two strains merge into a new, often more virulent virus; drift is gradual accumulation of small mutations over time.",
+      "Shift describes bacterial β-lactamase activity; drift describes fungal dimorphism.",
+      "Shift occurs only in Candida; drift occurs only in Mycobacterium tuberculosis."
+    ],
+    "correct": 1,
+    "rationale": "The document defines antigenic shift as two strains of the same virus type merging genetic material into a new and often more virulent virus, while antigenic drift is gradual minor mutation accumulation over time."
+  },
+  {
+    "q": "Which statement best describes acute HIV infection?",
+    "choices": [
+      "It is the final stage of HIV defined only by Kaposi sarcoma.",
+      "It occurs only in babies at four months of age.",
+      "It is the initial stage shortly after exposure, with high viral replication and flu-like symptoms often appearing 1-6 weeks after exposure, average 2-4 weeks.",
+      "It is a bacterial infection treated by β-lactamase inhibitors."
+    ],
+    "correct": 2,
+    "rationale": "The document describes acute HIV infection as the initial stage after exposure, characterized by high viral replication and flu-like symptoms that typically appear 1-6 weeks after exposure, average 2-4 weeks."
+  },
+  {
+    "q": "Which statement correctly describes PEP and untreated chronic HIV from the document?",
+    "choices": [
+      "PEP is started only after AIDS develops, and untreated HIV usually resolves spontaneously.",
+      "PEP is an antifungal treatment for Candida auris, and chronic HIV means the virus is inactive forever.",
+      "PEP is an annual antibiogram, and chronic HIV is defined by LPS endotoxin release.",
+      "PEP uses antiretroviral medications after potential exposure and should be started as soon as possible, ideally within 72 hours but up to 3-5 days; untreated acute HIV can become chronic with continued replication and progressive CD4 depletion."
+    ],
+    "correct": 3,
+    "rationale": "The document states that PEP is antiretroviral medication after possible HIV exposure, ideally within 72 hours but up to 3-5 days. It also states untreated acute HIV can become chronic, with ongoing viral replication and progressive CD4+ T-cell depletion."
+  },
+  {
+    "q": "Which HIV testing process is identified as the gold standard in the module?",
+    "choices": [
+      "Use a combination HIV antigen/antibody test; if antigen is positive, perform HIV-1/HIV-2 antibody differentiation, and if indeterminate, obtain an HIV viral load test and CD4 count as needed.",
+      "Start with CD4 count only; if below 200, no further testing is needed.",
+      "Use urine Bence Jones protein testing followed by an antibiogram.",
+      "Use Gram stain first, then acid-fast staining if the virus appears purple."
+    ],
+    "correct": 0,
+    "rationale": "The HIV testing section identifies the combination antigen/antibody test as gold standard, followed by HIV-1/HIV-2 antibody differentiation if antigen-positive, viral load testing if indeterminate, and CD4 testing to assess immune status."
+  },
+  {
+    "q": "Which statement correctly distinguishes HIV from AIDS and includes the pediatric testing point in the document?",
+    "choices": [
+      "HIV is diagnosed only when CD4 is below 200; AIDS is any infection before symptoms start; children are tested only after age three.",
+      "HIV generally has CD4 count at or above 200 cells/mm³ without AIDS-defining illness; AIDS is CD4 below 200 cells/mm³ or an AIDS-defining illness regardless of CD4; babies born to HIV-positive mothers are tested at 2-4 weeks by viral load and again at 4 months for definitive diagnosis.",
+      "HIV is a fungal infection with ergosterol; AIDS is Gram-negative sepsis; children are tested with an antibiogram.",
+      "HIV is always cured during convalescence; AIDS is only acute prodrome; children do not develop opportunistic infections."
+    ],
+    "correct": 1,
+    "rationale": "The document distinguishes HIV from AIDS by CD4 count and AIDS-defining illness: HIV generally has CD4 ≥200 without AIDS-defining illness, while AIDS is CD4 <200 or an AIDS-defining illness. It also states babies born to HIV-positive mothers are tested by viral load at 2-4 weeks and again at 4 months for definitive diagnosis."
+  }
+];
+    const storageKey = 'module4_infections_quiz_v1';
+    const letters = ['A', 'B', 'C', 'D'];
+    let current = 0;
+    let answers = Array(questions.length).fill(null);
+
+    function load() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey));
+        if (saved && Array.isArray(saved.answers) && saved.answers.length === questions.length) {
+          answers = saved.answers;
+          current = Number.isInteger(saved.current) ? Math.min(Math.max(saved.current, 0), questions.length - 1) : 0;
+        }
+      } catch (e) {}
+    }
+
+    function save() {
+      localStorage.setItem(storageKey, JSON.stringify({ answers, current }));
+    }
+
+    function render() {
+      const q = questions[current];
+      document.getElementById('eyebrow').textContent = `Question ${current + 1} of ${questions.length}`;
+      document.getElementById('questionText').textContent = q.q;
+      const choices = document.getElementById('choices');
+      choices.innerHTML = '';
+      const selected = answers[current];
+      q.choices.forEach((choice, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'choice';
+        if (selected !== null) {
+          btn.disabled = true;
+          if (index === q.correct) btn.classList.add('correct');
+          if (index === selected && selected !== q.correct) btn.classList.add('incorrect');
+        }
+        btn.innerHTML = `<span class="letter">${letters[index]}</span><span>${escapeHtml(choice)}</span>`;
+        btn.addEventListener('click', () => answer(index));
+        choices.appendChild(btn);
+      });
+      renderFeedback();
+      renderStats();
+      renderNav();
+      document.getElementById('prevBtn').disabled = current === 0;
+      document.getElementById('nextBtn').disabled = current === questions.length - 1;
+      save();
+    }
+
+    function answer(index) {
+      if (answers[current] !== null) return;
+      answers[current] = index;
+      render();
+    }
+
+    function renderFeedback() {
+      const fb = document.getElementById('feedback');
+      const selected = answers[current];
+      if (selected === null) {
+        fb.className = 'feedback';
+        fb.style.display = 'none';
+        fb.innerHTML = '';
+        return;
+      }
+      const q = questions[current];
+      const isCorrect = selected === q.correct;
+      fb.style.display = 'block';
+      fb.className = 'feedback ' + (isCorrect ? 'good' : 'bad');
+      fb.innerHTML = `
+        <h3>${isCorrect ? 'Correct' : 'Incorrect'}</h3>
+        <p><strong>Correct answer:</strong> ${letters[q.correct]}. ${escapeHtml(q.choices[q.correct])}</p>
+        <p><strong>Rationale:</strong> ${escapeHtml(q.rationale)}</p>
+      `;
+    }
+
+    function renderStats() {
+      const answered = answers.filter(a => a !== null).length;
+      const correct = answers.reduce((sum, ans, i) => sum + (ans === questions[i].correct ? 1 : 0), 0);
+      const score = answered ? Math.round((correct / answered) * 100) : 0;
+      document.getElementById('answeredStat').textContent = answered;
+      document.getElementById('correctStat').textContent = correct;
+      document.getElementById('scoreStat').textContent = score + '%';
+      document.getElementById('remainingStat').textContent = questions.length - answered;
+      document.getElementById('progressBar').style.width = `${(answered / questions.length) * 100}%`;
+    }
+
+    function renderNav() {
+      const nav = document.getElementById('navigator');
+      nav.innerHTML = '';
+      questions.forEach((q, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'navbtn';
+        if (i === current) btn.classList.add('current');
+        if (answers[i] !== null) {
+          btn.classList.add('answered');
+          btn.classList.add(answers[i] === q.correct ? 'correct' : 'incorrect');
+        }
+        btn.textContent = i + 1;
+        btn.addEventListener('click', () => { current = i; render(); window.scrollTo({top: 0, behavior: 'smooth'}); });
+        nav.appendChild(btn);
+      });
+    }
+
+    function renderAnswerKey() {
+      const key = document.getElementById('answerKey');
+      key.innerHTML = '';
+      questions.forEach((q, i) => {
+        const div = document.createElement('div');
+        div.className = 'key-item';
+        div.innerHTML = `<b>${i + 1}. ${escapeHtml(q.q)}</b><div><strong>Answer:</strong> ${letters[q.correct]}. ${escapeHtml(q.choices[q.correct])}</div><div><strong>Rationale:</strong> ${escapeHtml(q.rationale)}</div>`;
+        key.appendChild(div);
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => { if (current > 0) { current--; render(); } });
+    document.getElementById('nextBtn').addEventListener('click', () => { if (current < questions.length - 1) { current++; render(); } });
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (confirm('Reset all saved answers for this quiz?')) {
+        answers = Array(questions.length).fill(null);
+        current = 0;
+        save();
+        render();
+      }
+    });
+
+    load();
+    renderAnswerKey();
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 3 Immunity Interactive Practice Quiz</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --ink: #172033;
+      --muted: #637083;
+      --line: #dce3ee;
+      --accent: #355c9f;
+      --accent-soft: #e8efff;
+      --good: #137a3a;
+      --good-bg: #e8f8ee;
+      --bad: #b42318;
+      --bad-bg: #ffebe8;
+      --shadow: 0 10px 30px rgba(20, 35, 65, 0.08);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: var(--bg); color: var(--ink); }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 18px; }
+    header { background: linear-gradient(135deg, #ffffff 0%, #edf3ff 100%); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); margin-bottom: 16px; }
+    h1 { margin: 0 0 8px; font-size: clamp(1.45rem, 3.6vw, 2.25rem); }
+    .sub { margin: 0 0 16px; color: var(--muted); line-height: 1.45; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0; }
+    .stat { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px; text-align: center; }
+    .stat b { display:block; font-size: 1.25rem; margin-bottom: 2px; }
+    .stat span { color: var(--muted); font-size: .86rem; }
+    .progress-shell { height: 12px; background: #dfe7f5; border-radius: 999px; overflow: hidden; }
+    .progress-bar { height: 100%; width: 0%; background: var(--accent); transition: width .25s ease; }
+    main { display: grid; grid-template-columns: 1fr 300px; gap: 16px; align-items: start; }
+    .card, .side, details { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .card { padding: 18px; }
+    .eyebrow { color: var(--accent); font-weight: 800; letter-spacing: .02em; margin-bottom: 8px; }
+    .question { font-size: 1.15rem; line-height: 1.45; font-weight: 750; margin: 0 0 16px; }
+    .choices { display: grid; gap: 10px; }
+    .choice { width: 100%; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 14px; padding: 14px; text-align: left; cursor: pointer; display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: start; font-size: 1rem; line-height: 1.35; }
+    .choice:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+    .choice:disabled { cursor: default; opacity: 1; }
+    .letter { width: 28px; height: 28px; border-radius: 999px; display:inline-grid; place-items:center; font-weight: 800; background: #edf1f7; color: var(--ink); }
+    .choice.correct { background: var(--good-bg); border-color: #8fd3aa; }
+    .choice.correct .letter { background: var(--good); color: #fff; }
+    .choice.incorrect { background: var(--bad-bg); border-color: #ff9d93; }
+    .choice.incorrect .letter { background: var(--bad); color: #fff; }
+    .feedback { display:none; margin-top: 16px; border-radius: 14px; padding: 14px; line-height: 1.45; }
+    .feedback.good { display:block; background: var(--good-bg); border: 1px solid #8fd3aa; }
+    .feedback.bad { display:block; background: var(--bad-bg); border: 1px solid #ff9d93; }
+    .feedback h3 { margin: 0 0 6px; }
+    .feedback p { margin: 6px 0; }
+    .controls { display:flex; gap: 10px; justify-content: space-between; margin-top: 18px; }
+    button.control { border: 0; border-radius: 12px; padding: 12px 15px; font-weight: 750; cursor: pointer; background: var(--ink); color: #fff; }
+    button.control.secondary { background: #e8eef7; color: var(--ink); }
+    button.control:disabled { opacity: .45; cursor: not-allowed; }
+    .side { padding: 16px; position: sticky; top: 12px; }
+    .side h2 { font-size: 1rem; margin: 0 0 10px; }
+    .grid { display:grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .navbtn { border: 1px solid var(--line); border-radius: 10px; padding: 8px 0; background: #fff; cursor: pointer; font-weight: 700; color: var(--ink); }
+    .navbtn.current { outline: 2px solid var(--accent); background: var(--accent-soft); }
+    .navbtn.answered.correct { background: var(--good-bg); border-color: #9bd8b4; color: var(--good); }
+    .navbtn.answered.incorrect { background: var(--bad-bg); border-color: #ffa79d; color: var(--bad); }
+    .side-actions { display:grid; gap: 8px; margin-top: 14px; }
+    .smallbtn { border: 1px solid var(--line); background: #fff; color: var(--ink); padding: 10px 12px; border-radius: 12px; cursor: pointer; font-weight: 700; }
+    details { margin-top: 16px; padding: 16px; }
+    summary { cursor: pointer; font-weight: 800; }
+    .answer-key { margin-top: 12px; display:grid; gap: 10px; }
+    .key-item { border-top: 1px solid var(--line); padding-top: 10px; }
+    .key-item b { display:block; margin-bottom:4px; }
+    .source-note { margin-top: 12px; font-size: .86rem; color: var(--muted); }
+    @media (max-width: 760px) {
+      .wrap { padding: 10px; }
+      header, .card, .side, details { border-radius: 15px; }
+      main { grid-template-columns: 1fr; }
+      .side { position: static; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .grid { grid-template-columns: repeat(10, 1fr); }
+      .choice { padding: 13px 12px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .card, .side, header .stats, .progress-shell, .controls, .side-actions { display: none !important; }
+      main { display:block; }
+      header, details { box-shadow: none; border: 0; }
+      details { display: block; }
+      details > summary { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Module 3 Immunity Interactive Practice Quiz</h1>
+      <p class="sub">50 multiple-choice questions based only on <strong>Module3Immunity1.docx</strong>. Immediate feedback appears after each answer.</p>
+      <div class="stats">
+        <div class="stat"><b id="answeredStat">0</b><span>Answered</span></div>
+        <div class="stat"><b id="correctStat">0</b><span>Correct</span></div>
+        <div class="stat"><b id="scoreStat">0%</b><span>Score</span></div>
+        <div class="stat"><b id="remainingStat">50</b><span>Remaining</span></div>
+      </div>
+      <div class="progress-shell" aria-label="Quiz progress"><div class="progress-bar" id="progressBar"></div></div>
+      <p class="source-note">Study mode: answer choices lock after selection. Use Reset Progress to start over.</p>
+    </header>
+
+    <main>
+      <section class="card" aria-live="polite">
+        <div class="eyebrow" id="eyebrow">Question 1 of 50</div>
+        <p class="question" id="questionText"></p>
+        <div class="choices" id="choices"></div>
+        <div class="feedback" id="feedback"></div>
+        <div class="controls">
+          <button class="control secondary" id="prevBtn">Previous</button>
+          <button class="control" id="nextBtn">Next</button>
+        </div>
+      </section>
+
+      <aside class="side">
+        <h2>Question Navigator</h2>
+        <div class="grid" id="navigator"></div>
+        <div class="side-actions">
+          <button class="smallbtn" id="resetBtn">Reset Progress</button>
+          <button class="smallbtn" onclick="window.print()">Print Answer Key</button>
+        </div>
+      </aside>
+    </main>
+
+    <details id="answerKeyDetails">
+      <summary>Printable answer key</summary>
+      <div class="answer-key" id="answerKey"></div>
+    </details>
+  </div>
+
+  <script>
+    const questions = [
+  {
+    "q": "Which statement best describes innate immunity according to the module?",
+    "choices": [
+      "It is present from birth and provides immediate, nonspecific protection against a broad range of pathogens.",
+      "It develops only after vaccination and provides long-lasting, antigen-specific protection.",
+      "It depends on B cells producing antigen-specific immunoglobulins after exposure.",
+      "It is delayed for 24-72 hours and depends mainly on sensitized T cells."
+    ],
+    "correct": 0,
+    "rationale": "The document defines innate immunity as the body's first line of defense, present from birth, providing immediate nonspecific protection against many pathogens."
+  },
+  {
+    "q": "Which statement best describes adaptive immunity according to the module?",
+    "choices": [
+      "It is a non-specific response that does not change after repeated exposure to the same pathogen.",
+      "It is a specific acquired response that develops after exposure to pathogens or vaccination and provides targeted, long-lasting protection.",
+      "It consists only of skin, mucous membranes, and acidic stomach secretions.",
+      "It does not involve antigen recognition or immunological memory."
+    ],
+    "correct": 1,
+    "rationale": "Adaptive immunity is described as specific, acquired throughout life after exposure or vaccination, and characterized by immunological memory and targeted protection."
+  },
+  {
+    "q": "Which pair correctly contrasts the specificity of innate and adaptive immunity?",
+    "choices": [
+      "Innate immunity uses specific antibodies; adaptive immunity uses only complement proteins and cytokines.",
+      "Innate immunity is highly specific to one pathogen; adaptive immunity is generalized and unchanged after reinfection.",
+      "Innate immunity recognizes common pathogen patterns; adaptive immunity recognizes unique antigens through specific lymphocyte receptors.",
+      "Innate immunity is acquired after vaccination; adaptive immunity is present from birth."
+    ],
+    "correct": 2,
+    "rationale": "The module contrasts innate recognition of PAMPs through pattern recognition receptors with adaptive recognition of unique antigens by T and B cell receptors."
+  },
+  {
+    "q": "Which feature is specifically associated with adaptive immunity but not innate immunity in the module?",
+    "choices": [
+      "Rapid inflammation as the first response to infection.",
+      "Use of physical barriers such as skin and mucous membranes.",
+      "Recognition of broad pathogen-associated molecular patterns without specific antibodies.",
+      "Production of specific antibodies by B cells with long-term protection and memory."
+    ],
+    "correct": 3,
+    "rationale": "The document states that innate immunity does not involve specific antibodies, whereas adaptive immunity involves specific immunoglobulins produced by B cells and immune memory."
+  },
+  {
+    "q": "Which group is listed as key cellular components of innate immunity?",
+    "choices": [
+      "Phagocytes such as neutrophils and macrophages, natural killer cells, and dendritic cells.",
+      "Only plasma cells and memory B cells.",
+      "Only IgG, IgA, IgM, IgE, and IgD.",
+      "Only cytotoxic T cells, helper T cells, and regulatory T cells."
+    ],
+    "correct": 0,
+    "rationale": "The innate immunity section lists phagocytes, NK cells, and dendritic cells as key cellular components."
+  },
+  {
+    "q": "Which physical barriers are included in the module's description of innate immunity?",
+    "choices": [
+      "IgG, IgM, and IgA.",
+      "Skin, mucous membranes, and acidic stomach secretions.",
+      "Thymus, bone marrow, and lymphocyte receptors only.",
+      "Plasma cells, memory B cells, and antibodies."
+    ],
+    "correct": 1,
+    "rationale": "The module lists skin, mucous membranes, and acidic stomach secretions as physical barriers in innate immunity."
+  },
+  {
+    "q": "What is an antigen according to the module?",
+    "choices": [
+      "A protein made only by B cells to bind pathogens.",
+      "A cell that engulfs, processes, and presents peptides to T cells.",
+      "A molecule that can trigger an immune response in the body.",
+      "A Y-shaped glycoprotein with heavy and light chains."
+    ],
+    "correct": 2,
+    "rationale": "An antigen is defined as a molecule that can trigger an immune response; examples include foreign substances such as bacteria, viruses, allergens, or fungi."
+  },
+  {
+    "q": "Which statement describes haptens as presented in the module?",
+    "choices": [
+      "They are long-term immunoglobulins responsible for immune memory.",
+      "They are antigen-presenting cells that activate T lymphocytes.",
+      "They are physical barriers present from birth.",
+      "They are small molecules that can elicit an immune response only when attached to a larger carrier molecule."
+    ],
+    "correct": 3,
+    "rationale": "The antigen section states that haptens are small molecules that can elicit an immune response only when attached to a larger carrier molecule."
+  },
+  {
+    "q": "What are antibodies according to the module?",
+    "choices": [
+      "Immunoglobulin proteins produced by B lymphocytes in response to antigens and highly specific to the antigens they recognize.",
+      "Pattern recognition receptors that detect broad pathogen-associated molecular patterns only.",
+      "Specialized immune cells that engulf antigens and present them to T lymphocytes.",
+      "Physical barriers such as skin, mucous membranes, and stomach acid."
+    ],
+    "correct": 0,
+    "rationale": "The document defines antibodies as immunoglobulins produced by B lymphocytes in response to antigens, with high specificity for those antigens."
+  },
+  {
+    "q": "Which immunoglobulin is identified as the first produced in response to infection and a potent activator of complement?",
+    "choices": [
+      "IgG",
+      "IgM",
+      "IgD",
+      "IgE"
+    ],
+    "correct": 1,
+    "rationale": "The module states that IgM is the first antibody produced in response to infection and is a potent activator of the complement system."
+  },
+  {
+    "q": "Which immunoglobulin is described as the main long-term antibody and the most abundant antibody in the bloodstream?",
+    "choices": [
+      "IgE",
+      "IgD",
+      "IgG",
+      "IgA"
+    ],
+    "correct": 2,
+    "rationale": "The module describes IgG as the main antibody class responsible for long-term immunity and the most abundant antibody in the bloodstream."
+  },
+  {
+    "q": "Which immunoglobulin is found predominantly in mucosal areas such as the respiratory and gastrointestinal tracts?",
+    "choices": [
+      "IgD",
+      "IgG",
+      "IgM",
+      "IgA"
+    ],
+    "correct": 3,
+    "rationale": "IgA is described as being found predominantly in mucosal areas, including the respiratory and gastrointestinal tracts, where it supports mucosal immunity."
+  },
+  {
+    "q": "Which immunoglobulin is primarily involved in allergic responses and defense against parasitic infections?",
+    "choices": [
+      "IgE",
+      "IgM",
+      "IgD",
+      "IgG"
+    ],
+    "correct": 0,
+    "rationale": "The module states that IgE is primarily involved in allergic responses and defense against parasitic infections and binds mast cells and basophils."
+  },
+  {
+    "q": "Which immunoglobulin is found mainly on the surface of B cells and functions as a receptor for antigen recognition?",
+    "choices": [
+      "IgA",
+      "IgD",
+      "IgE",
+      "IgM"
+    ],
+    "correct": 1,
+    "rationale": "IgD is described as found mainly on B cell surfaces, where it acts as a receptor for antigen recognition and participates in B cell activation and maturation."
+  },
+  {
+    "q": "What are antigen-presenting cells according to the module?",
+    "choices": [
+      "Antibodies that provide long-term immune memory by crossing the placenta.",
+      "Physical barriers that prevent pathogen entry through skin and stomach acid.",
+      "Specialized immune cells that detect, engulf, process, and present antigenic peptides to T lymphocytes.",
+      "Small molecules that trigger an immune response only when attached to carriers."
+    ],
+    "correct": 2,
+    "rationale": "APCs are defined as specialized immune cells that phagocytose, process, and present antigens to T lymphocytes to initiate adaptive responses. The document lists dendritic cells, macrophages, and B cells as examples."
+  },
+  {
+    "q": "Where do T cells and B cells mature according to the module?",
+    "choices": [
+      "T cells mature in the bone marrow; B cells mature in the thymus.",
+      "Both T cells and B cells mature only in mucous membranes.",
+      "Both T cells and B cells mature only after antibody transfer through breast milk.",
+      "T cells mature in the thymus; B cells mature in the bone marrow."
+    ],
+    "correct": 3,
+    "rationale": "The T and B cell comparison states that T cells mature in the thymus and B cells mature in the bone marrow."
+  },
+  {
+    "q": "Which statement correctly describes T-cell antigen response?",
+    "choices": [
+      "T cells recognize antigens presented by antigen-presenting cells and respond by killing infected cells or coordinating immune responses.",
+      "T cells recognize antigens directly and differentiate into plasma cells that produce antibodies.",
+      "T cells act only by making IgM in the bloodstream.",
+      "T cells provide passive immunity through antibodies transferred from another person."
+    ],
+    "correct": 0,
+    "rationale": "The module says T cells recognize antigens presented by APCs and respond through cytotoxic T cell killing or helper T cell coordination."
+  },
+  {
+    "q": "Which statement correctly describes B-cell antigen response?",
+    "choices": [
+      "B cells mature in the thymus and become cytotoxic T cells.",
+      "B cells recognize antigens directly and differentiate into plasma cells that produce antibodies and memory B cells.",
+      "B cells recognize only antigens presented by APCs and never produce antibodies.",
+      "B cells function only as natural killer cells against cancer cells."
+    ],
+    "correct": 1,
+    "rationale": "The module states that B cells recognize antigens directly and become plasma cells producing antibodies plus memory B cells for future responses."
+  },
+  {
+    "q": "What consequence is associated with impaired T-cell function?",
+    "choices": [
+      "Excess production of mucosal IgA only.",
+      "Improved antibody diversity and stronger vaccine response.",
+      "Compromised cell-mediated immunity with increased susceptibility to intracellular pathogens, opportunistic infections, and cancer.",
+      "A permanent increase in newborn leukocyte lethality."
+    ],
+    "correct": 2,
+    "rationale": "The T/B cell comparison states that impaired T-cell function compromises cell-mediated immunity and increases susceptibility to intracellular pathogens, opportunistic infections, and cancer."
+  },
+  {
+    "q": "What consequence is associated with impaired B-cell function?",
+    "choices": [
+      "An inability of the thymus to mature cytotoxic T cells only.",
+      "Overactivation of mast cells through IgE cross-linking only.",
+      "Immediate passive immunity through placental transfer.",
+      "Decreased antibody production and reduced ability to fight extracellular pathogens."
+    ],
+    "correct": 3,
+    "rationale": "The document states impaired B-cell function decreases antibody production and increases susceptibility to infections by reducing defense against extracellular pathogens."
+  },
+  {
+    "q": "Which antibody action is neutralization?",
+    "choices": [
+      "Binding to and inactivating toxins or viral particles so they cannot interact with host cells.",
+      "Making soluble antigens insoluble so they precipitate out of solution.",
+      "Cross-linking multiple antigens into clumps.",
+      "Marking pathogens so phagocytes can recognize and engulf them more efficiently."
+    ],
+    "correct": 0,
+    "rationale": "The module defines neutralization as antibodies binding to harmful components such as toxins or viral particles and blocking their ability to cause harm."
+  },
+  {
+    "q": "Which antibody action is opsonization?",
+    "choices": [
+      "Cross-linking antigens into large clumps only.",
+      "Binding to antigen surfaces to make them more recognizable to phagocytic cells.",
+      "Making soluble antigens insoluble only.",
+      "Shrinking the thymus to reduce new T-cell production."
+    ],
+    "correct": 1,
+    "rationale": "Opsonization occurs when antibodies coat antigens, marking them for phagocytosis by macrophages and neutrophils."
+  },
+  {
+    "q": "Which antibody action is agglutination?",
+    "choices": [
+      "Blocking toxin activity through direct inactivation only.",
+      "Converting soluble antigens into insoluble precipitates only.",
+      "Cross-linking multiple antigens together to form antigen-antibody complexes or clumps.",
+      "Decreasing T and B cell function through poor nutrition."
+    ],
+    "correct": 2,
+    "rationale": "Agglutination is described as antibodies cross-linking multiple antigens into complexes or clumps that are easier to clear."
+  },
+  {
+    "q": "Which antibody action is precipitation?",
+    "choices": [
+      "Blocking pathogen receptor sites to prevent attachment only.",
+      "Cross-linking cells into visible clumps only.",
+      "Producing fever through chronic inflammation only.",
+      "Making soluble antigens insoluble so they form complexes that precipitate out of solution."
+    ],
+    "correct": 3,
+    "rationale": "The module defines precipitation as antibodies making soluble antigens insoluble, causing them to form complexes that precipitate out of solution."
+  },
+  {
+    "q": "Which is a direct effect of antibodies on antigens described in the module?",
+    "choices": [
+      "Covering receptor sites to prevent antigen attachment to host cells.",
+      "Transferring maternal antibodies from placenta to fetus.",
+      "Shrinking the thymus with age.",
+      "Decreasing lymphocyte numbers during chronic stress."
+    ],
+    "correct": 0,
+    "rationale": "The direct effects section states that antibodies can cover receptor sites, preventing antigens from attaching to host cells and initiating infection."
+  },
+  {
+    "q": "Which is an indirect antibody effect described in the module?",
+    "choices": [
+      "IgD crossing the placenta to confer passive immunity to the fetus.",
+      "IgM activation of the complement system to promote inflammation, opsonization, and cell lysis.",
+      "IgE functioning as the main long-term immune memory antibody.",
+      "IgG being the first antibody produced in response to infection."
+    ],
+    "correct": 1,
+    "rationale": "The module lists IgM complement activation as an indirect antibody effect that enhances the innate immune response."
+  },
+  {
+    "q": "Which statement best describes active acquired immunity?",
+    "choices": [
+      "Pre-formed antibodies are transferred from an immune donor to a non-immune recipient.",
+      "It is immediate but temporary because the recipient does not produce their own antibodies.",
+      "The individual's immune system produces antibodies and memory cells after exposure to antigens through infection or vaccination.",
+      "It occurs only when antibodies pass through breast milk after birth."
+    ],
+    "correct": 2,
+    "rationale": "Active acquired immunity develops when the immune system is exposed to antigens through infection or vaccination, producing antibodies and memory cells for long-term protection."
+  },
+  {
+    "q": "Which statement best describes passive immunity?",
+    "choices": [
+      "The recipient's immune system produces its own antibodies and memory cells after vaccination.",
+      "It is always delayed until a secondary response develops.",
+      "It depends on T cells maturing in the thymus after antigen exposure.",
+      "Pre-formed antibodies are transferred from another individual or animal, giving immediate but temporary protection without immune memory."
+    ],
+    "correct": 3,
+    "rationale": "The module defines passive immunity as transfer of pre-formed antibodies that provides immediate but temporary protection and does not confer immunological memory."
+  },
+  {
+    "q": "Which example matches natural passive immunity?",
+    "choices": [
+      "Antibodies passed from mother to fetus through the placenta or through breast milk after birth.",
+      "Immunity after recovery from an infection.",
+      "Immunity after vaccination stimulates the recipient's own immune response.",
+      "Antibodies injected therapeutically from humans or animals."
+    ],
+    "correct": 0,
+    "rationale": "Natural passive immunity occurs when maternal antibodies pass to the fetus through the placenta or to the infant through breast milk."
+  },
+  {
+    "q": "Which example matches artificial passive immunity?",
+    "choices": [
+      "A newborn receiving antibodies through breast milk.",
+      "Injection of antibody-containing blood plasma or serum from humans or animals previously exposed to a pathogen.",
+      "An adult producing antibodies after vaccination.",
+      "A person generating memory cells after recovering from infection."
+    ],
+    "correct": 1,
+    "rationale": "Artificial passive immunity is described as therapeutic introduction of antibodies produced by another organism, such as antibody-containing plasma or serum."
+  },
+  {
+    "q": "Which statement correctly contrasts primary and secondary adaptive immune responses?",
+    "choices": [
+      "The primary response is faster than the secondary response because it already has memory cells.",
+      "The secondary response occurs only in innate immunity and does not involve memory.",
+      "The primary response has an initial lag after first antigen exposure; the secondary response is faster and more potent because memory cells recognize the antigen.",
+      "Both primary and secondary responses are temporary antibody transfers without immune activation."
+    ],
+    "correct": 2,
+    "rationale": "The module states that first exposure has a lag time while the immune response ramps up, whereas re-exposure triggers a faster, more potent response through memory cells."
+  },
+  {
+    "q": "Which statement correctly compares cellular and humoral immunity?",
+    "choices": [
+      "Cellular immunity involves IgG only; humoral immunity involves skin and stomach acid only.",
+      "Cellular immunity is passive antibody transfer; humoral immunity is thymus shrinkage with aging.",
+      "Cellular immunity is IgA in breast milk only; humoral immunity is cytotoxic T-cell killing only.",
+      "Cellular immunity involves T lymphocytes; humoral immunity involves B lymphocytes producing antibodies."
+    ],
+    "correct": 3,
+    "rationale": "The adaptive immunity section defines cellular immunity as T-cell based and humoral immunity as B-cell/antibody based."
+  },
+  {
+    "q": "Which statement reflects the module's fetal/newborn immunity timeline for maternal antibodies?",
+    "choices": [
+      "Maternal antibodies protect the infant until about 37-40 weeks of gestation and can last about 6 months after birth.",
+      "Maternal antibodies begin only 6-8 months after birth and last for life.",
+      "Maternal antibodies are produced by newborn T cells in the thymus immediately at birth.",
+      "Maternal antibodies do not cross the placenta or appear in breast milk."
+    ],
+    "correct": 0,
+    "rationale": "The fetal/newborn section states that maternal antibodies pass during pregnancy, protect until about 37-40 weeks of gestation, decline after birth, and may last about 6 months."
+  },
+  {
+    "q": "When does production of T and B cells begin according to the newborn immunity section?",
+    "choices": [
+      "Only during the first trimester of pregnancy.",
+      "Around 6-8 months after birth.",
+      "Only after the thymus shrinks in older adulthood.",
+      "Only after a Type III hypersensitivity reaction occurs."
+    ],
+    "correct": 1,
+    "rationale": "The module states that production of T and B cells begins around 6-8 months after birth."
+  },
+  {
+    "q": "Why are newborns more susceptible to infections according to the module?",
+    "choices": [
+      "They have excessive long-term IgG responses to every antigen at birth.",
+      "They have fully mature T and B cell production before birth.",
+      "Their immune system is immature at birth, and leukocytes are relatively weak and less lethal.",
+      "They lack all passive immunity from maternal antibodies or breast milk."
+    ],
+    "correct": 2,
+    "rationale": "The document states that newborn leukocytes are relatively weak and less lethal and that the immune system is immature at birth, increasing infection susceptibility."
+  },
+  {
+    "q": "Which immunoglobulins in breast milk are listed as conferring passive immunity to infants?",
+    "choices": [
+      "IgD only.",
+      "IgE only.",
+      "Cytokines only, with no immunoglobulins.",
+      "IgA, IgG, and IgM."
+    ],
+    "correct": 3,
+    "rationale": "The newborn immunity section states that breast milk contains immunoglobulins such as IgA, IgG, and IgM that confer passive immunity."
+  },
+  {
+    "q": "Which age-related change affects T cells according to the module?",
+    "choices": [
+      "The thymus gradually shrinks, leading to decreased production of new T cells.",
+      "The thymus enlarges and causes excessive newborn leukocyte production.",
+      "T cells are replaced entirely by maternal antibodies after age 65.",
+      "T cells become the main antibody-producing plasma cells with age."
+    ],
+    "correct": 0,
+    "rationale": "The aging section says the thymus, where T cells mature, shrinks with age, decreasing production of new T cells and weakening adaptive responses."
+  },
+  {
+    "q": "Which age-related change affects B-cell function according to the module?",
+    "choices": [
+      "B cells disappear entirely after infancy.",
+      "B-cell number remains relatively stable, but antibody diversity and effectiveness can decline.",
+      "B cells mature in the thymus and become NK cells with age.",
+      "B cells stop all involvement in humoral immunity after vaccination."
+    ],
+    "correct": 1,
+    "rationale": "The module states that B-cell numbers remain relatively stable with age, but diversity and effectiveness of antibody production may decline."
+  },
+  {
+    "q": "What is inflammaging according to the module's aging section?",
+    "choices": [
+      "The first antibody response after exposure to infection.",
+      "A passive transfer of maternal antibodies through the placenta.",
+      "A state of low-grade chronic inflammation caused by increased chronic immune activation with age.",
+      "An IgE-mediated allergic response occurring within minutes."
+    ],
+    "correct": 2,
+    "rationale": "The module describes inflammaging as low-grade inflammation from chronically activated immunity in aging, contributing to age-related diseases."
+  },
+  {
+    "q": "Which mechanism defines Type I hypersensitivity in the module?",
+    "choices": [
+      "Immune complexes deposit in tissues and activate complement over hours to days.",
+      "Sensitized CD4+ and CD8+ T cells release cytokines over 24-72 hours.",
+      "Maternal antibodies cross the placenta and provide temporary protection.",
+      "IgE antibodies bound to mast cells or basophils are cross-linked on re-exposure, triggering histamine release and rapid symptoms."
+    ],
+    "correct": 3,
+    "rationale": "Type I hypersensitivity is described as IgE-mediated mast cell or basophil activation with histamine release and symptoms within minutes to a few hours. The document lists hay fever, asthma, hives, and anaphylaxis as examples, with antihistamines, corticosteroids, and epinephrine in severe cases as treatments."
+  },
+  {
+    "q": "Which mechanism defines Type III hypersensitivity in the module?",
+    "choices": [
+      "Antigen-antibody immune complexes deposit in tissues and activate complement, causing inflammation and tissue damage.",
+      "IgE cross-linking on mast cells causes histamine release within minutes.",
+      "Pre-formed antibodies transfer from mother to newborn through breast milk.",
+      "Sensitized T cells recognize antigen and release cytokines over 24-72 hours."
+    ],
+    "correct": 0,
+    "rationale": "Type III hypersensitivity is described as immune complex deposition in tissues with complement activation, inflammation, and tissue damage. The document lists SLE, rheumatoid arthritis, and glomerulonephritis as examples and describes treatment with immunosuppressants, anti-inflammatory medications, and management of underlying conditions."
+  },
+  {
+    "q": "Which mechanism defines Type IV hypersensitivity in the module?",
+    "choices": [
+      "IgE bound to mast cells triggers histamine release immediately.",
+      "Sensitized T cells recognize antigens and release cytokines that recruit and activate immune cells, producing delayed tissue damage.",
+      "B cells produce IgM as the first antibody in infection.",
+      "Antigen-antibody complexes precipitate out of circulation only."
+    ],
+    "correct": 1,
+    "rationale": "Type IV hypersensitivity is T-cell mediated, involving sensitized CD4+ and CD8+ T cells that release cytokines and cause delayed tissue damage. The document lists contact dermatitis, graft rejection, and multiple sclerosis as examples, with topical steroids, immunosuppressants, and avoidance as management strategies."
+  },
+  {
+    "q": "Which timing best matches Type IV hypersensitivity?",
+    "choices": [
+      "Symptoms usually occur only during fetal gestation weeks 37-40.",
+      "Symptoms occur only after 6-8 months after birth.",
+      "Symptoms typically develop over 24-72 hours after antigen exposure.",
+      "Symptoms always occur within seconds and resolve before inflammation begins."
+    ],
+    "correct": 2,
+    "rationale": "The module states Type IV symptoms typically develop over 24-72 hours after exposure, which is why it is called delayed-type hypersensitivity."
+  },
+  {
+    "q": "Which physiologic change is associated with chronic stress in the module?",
+    "choices": [
+      "Increased production of new thymic T cells and stronger adaptive immunity.",
+      "Permanent transfer of maternal antibodies to adults.",
+      "Selective increase in IgD crossing the placenta.",
+      "Decreased circulating lymphocytes, including T cells and B cells, with dysregulated immune response."
+    ],
+    "correct": 3,
+    "rationale": "The module says stress can decrease circulating lymphocytes, including T and B cells, and chronic stress can dysregulate the immune response."
+  },
+  {
+    "q": "How does poor nutrition affect immunity according to the module?",
+    "choices": [
+      "It can decrease T and B cell function and affect complement activation.",
+      "It causes immediate IgE-mediated anaphylaxis in all cases.",
+      "It creates long-lasting active immunity without antigen exposure.",
+      "It improves antibody diversity and vaccine responses with age."
+    ],
+    "correct": 0,
+    "rationale": "The nutrition section states that poor nutrition can decrease T and B cell function and that nutrient deficiencies can affect complement activation."
+  },
+  {
+    "q": "Which immune effects are associated with zinc deficiency in the module?",
+    "choices": [
+      "IgE cross-linking, histamine release, and anaphylaxis only.",
+      "Impaired immune response, increased susceptibility to infections, and delayed wound healing.",
+      "Long-term IgG memory and improved immune surveillance only.",
+      "Passive antibody transfer from mother to fetus only."
+    ],
+    "correct": 1,
+    "rationale": "The module states zinc is crucial for immune cell development and function, and deficiency is associated with impaired response, infection susceptibility, and delayed wound healing."
+  },
+  {
+    "q": "Which statement matches the module's description of vitamin B12 deficiency?",
+    "choices": [
+      "It directly causes immune complex deposition in tissues.",
+      "It acts as an immunoglobulin on B cell surfaces.",
+      "It can decrease white blood cell production and impair T and B cell function.",
+      "It is the main antibody class responsible for long-term immunity."
+    ],
+    "correct": 2,
+    "rationale": "The document states that vitamin B12 deficiency can decrease white blood cell production and impair T and B cell function."
+  },
+  {
+    "q": "Which statement matches the module's description of vitamins A, C, and E?",
+    "choices": [
+      "They are antigen-presenting cells that activate T lymphocytes.",
+      "They are antibodies found mainly on B-cell surfaces.",
+      "They are transferred only by artificial passive immunity.",
+      "They are antioxidants with essential roles in immune function, and deficiencies can compromise immune surveillance and pathogen response."
+    ],
+    "correct": 3,
+    "rationale": "The module describes vitamins A, C, and E as antioxidants with essential roles in immune function; deficiencies can compromise surveillance and response to pathogens."
+  },
+  {
+    "q": "How can cancer impact the immune system according to the module?",
+    "choices": [
+      "Cancer can produce cytokines that damage surrounding cells, impair immune function, create a pro-inflammatory environment, and contribute to nutritional deficiencies.",
+      "Cancer only improves complement activation and eliminates chronic inflammation.",
+      "Cancer only transfers antibodies passively from one individual to another.",
+      "Cancer only causes immediate IgE-mediated mast cell activation within minutes."
+    ],
+    "correct": 0,
+    "rationale": "The module states that cancer can dysregulate immunity by producing cytokines, damaging surrounding cells, impairing immune function, creating a pro-inflammatory environment, and contributing to nutritional deficiencies."
+  },
+  {
+    "q": "What is the immune impact of immunosuppression according to the module?",
+    "choices": [
+      "It makes passive immunity long-lasting by creating immune memory.",
+      "It targets immune cells, especially T cells, weakening immune response and increasing susceptibility to infections, autoimmune disorders, and certain cancers.",
+      "It increases newborn leukocyte lethality at birth.",
+      "It prevents any need for antibodies, APCs, or T cells."
+    ],
+    "correct": 1,
+    "rationale": "The module states that immunosuppression targets immune cells, particularly T cells, weakening defense and increasing susceptibility to infections, autoimmune disorders, and certain cancers."
+  }
+];
+    const storageKey = 'module3_immunity_quiz_v1';
+    const letters = ['A', 'B', 'C', 'D'];
+    let current = 0;
+    let answers = Array(questions.length).fill(null);
+
+    function load() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey));
+        if (saved && Array.isArray(saved.answers) && saved.answers.length === questions.length) {
+          answers = saved.answers;
+          current = Number.isInteger(saved.current) ? Math.min(Math.max(saved.current, 0), questions.length - 1) : 0;
+        }
+      } catch (e) {}
+    }
+
+    function save() {
+      localStorage.setItem(storageKey, JSON.stringify({ answers, current }));
+    }
+
+    function render() {
+      const q = questions[current];
+      document.getElementById('eyebrow').textContent = `Question ${current + 1} of ${questions.length}`;
+      document.getElementById('questionText').textContent = q.q;
+      const choices = document.getElementById('choices');
+      choices.innerHTML = '';
+      const selected = answers[current];
+      q.choices.forEach((choice, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'choice';
+        if (selected !== null) {
+          btn.disabled = true;
+          if (index === q.correct) btn.classList.add('correct');
+          if (index === selected && selected !== q.correct) btn.classList.add('incorrect');
+        }
+        btn.innerHTML = `<span class="letter">${letters[index]}</span><span>${escapeHtml(choice)}</span>`;
+        btn.addEventListener('click', () => answer(index));
+        choices.appendChild(btn);
+      });
+      renderFeedback();
+      renderStats();
+      renderNav();
+      document.getElementById('prevBtn').disabled = current === 0;
+      document.getElementById('nextBtn').disabled = current === questions.length - 1;
+      save();
+    }
+
+    function answer(index) {
+      if (answers[current] !== null) return;
+      answers[current] = index;
+      render();
+    }
+
+    function renderFeedback() {
+      const fb = document.getElementById('feedback');
+      const selected = answers[current];
+      if (selected === null) {
+        fb.className = 'feedback';
+        fb.style.display = 'none';
+        fb.innerHTML = '';
+        return;
+      }
+      const q = questions[current];
+      const isCorrect = selected === q.correct;
+      fb.style.display = 'block';
+      fb.className = 'feedback ' + (isCorrect ? 'good' : 'bad');
+      fb.innerHTML = `
+        <h3>${isCorrect ? 'Correct' : 'Incorrect'}</h3>
+        <p><strong>Correct answer:</strong> ${letters[q.correct]}. ${escapeHtml(q.choices[q.correct])}</p>
+        <p><strong>Rationale:</strong> ${escapeHtml(q.rationale)}</p>
+      `;
+    }
+
+    function renderStats() {
+      const answered = answers.filter(a => a !== null).length;
+      const correct = answers.reduce((sum, ans, i) => sum + (ans === questions[i].correct ? 1 : 0), 0);
+      const score = answered ? Math.round((correct / answered) * 100) : 0;
+      document.getElementById('answeredStat').textContent = answered;
+      document.getElementById('correctStat').textContent = correct;
+      document.getElementById('scoreStat').textContent = score + '%';
+      document.getElementById('remainingStat').textContent = questions.length - answered;
+      document.getElementById('progressBar').style.width = `${(answered / questions.length) * 100}%`;
+    }
+
+    function renderNav() {
+      const nav = document.getElementById('navigator');
+      nav.innerHTML = '';
+      questions.forEach((q, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'navbtn';
+        if (i === current) btn.classList.add('current');
+        if (answers[i] !== null) {
+          btn.classList.add('answered');
+          btn.classList.add(answers[i] === q.correct ? 'correct' : 'incorrect');
+        }
+        btn.textContent = i + 1;
+        btn.addEventListener('click', () => { current = i; render(); window.scrollTo({top: 0, behavior: 'smooth'}); });
+        nav.appendChild(btn);
+      });
+    }
+
+    function renderAnswerKey() {
+      const key = document.getElementById('answerKey');
+      key.innerHTML = '';
+      questions.forEach((q, i) => {
+        const div = document.createElement('div');
+        div.className = 'key-item';
+        div.innerHTML = `<b>${i + 1}. ${escapeHtml(q.q)}</b><div><strong>Answer:</strong> ${letters[q.correct]}. ${escapeHtml(q.choices[q.correct])}</div><div><strong>Rationale:</strong> ${escapeHtml(q.rationale)}</div>`;
+        key.appendChild(div);
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => { if (current > 0) { current--; render(); } });
+    document.getElementById('nextBtn').addEventListener('click', () => { if (current < questions.length - 1) { current++; render(); } });
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (confirm('Reset all saved answers for this quiz?')) {
+        answers = Array(questions.length).fill(null);
+        current = 0;
+        save();
+        render();
+      }
+    });
+
+    load();
+    renderAnswerKey();
+    render();
+  </script>
+</body>
+</html>

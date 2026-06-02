@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>M3Cancer1 Interactive Practice Quiz</title>
+<style>
+  :root {
+    --bg: #f6f7fb;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #d1d5db;
+    --accent: #2563eb;
+    --good: #047857;
+    --bad: #b91c1c;
+    --good-bg: #ecfdf5;
+    --bad-bg: #fef2f2;
+    --note-bg: #eff6ff;
+    --disabled: #f3f4f6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.45;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 18px; }
+  header {
+    background: linear-gradient(135deg, #111827, #1f2937);
+    color: white;
+    padding: 22px;
+    border-radius: 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 10px 24px rgba(0,0,0,.12);
+  }
+  h1 { font-size: clamp(1.35rem, 4vw, 2.1rem); margin: 0 0 8px; }
+  .subtitle { color: #d1d5db; margin: 0; }
+  .pillbar { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .pill { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2); padding: 6px 10px; border-radius: 999px; font-size: .88rem; }
+  .panel { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 16px; margin-bottom: 16px; box-shadow: 0 8px 18px rgba(15,23,42,.06); }
+  .progress-top { display: grid; gap: 10px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; }
+  .stat { font-weight: 650; }
+  .bar { height: 14px; background: #e5e7eb; border-radius: 999px; overflow: hidden; border: 1px solid #d1d5db; }
+  .bar > div { height: 100%; background: var(--accent); width: 0%; transition: width .25s ease; }
+  .question-card { min-height: 420px; }
+  .qmeta { color: var(--muted); font-weight: 650; margin-bottom: 10px; }
+  .question { font-size: 1.15rem; font-weight: 750; margin: 8px 0 16px; }
+  .choices { display: grid; gap: 10px; }
+  button.choice {
+    width: 100%; text-align: left; padding: 14px 14px; border-radius: 14px;
+    border: 1px solid var(--border); background: white; color: var(--text);
+    font-size: 1rem; cursor: pointer; transition: transform .05s ease, border-color .15s ease, background .15s ease;
+  }
+  button.choice:hover:not(:disabled) { border-color: var(--accent); transform: translateY(-1px); }
+  button.choice:disabled { cursor: default; }
+  button.choice.correct { border-color: var(--good); background: var(--good-bg); }
+  button.choice.incorrect { border-color: var(--bad); background: var(--bad-bg); }
+  .feedback { margin-top: 14px; padding: 14px; border-radius: 14px; border: 1px solid var(--border); display:none; }
+  .feedback.good { display:block; background: var(--good-bg); border-color: #a7f3d0; }
+  .feedback.bad { display:block; background: var(--bad-bg); border-color: #fecaca; }
+  .feedback .result { font-weight: 800; margin-bottom: 6px; }
+  .navrow { display:flex; gap:10px; flex-wrap:wrap; justify-content: space-between; margin-top: 16px; }
+  .btn { border: 1px solid var(--border); background: white; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-weight: 650; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+  .btn.warn { background: #fff7ed; border-color: #fdba74; }
+  .btn:disabled { opacity:.5; cursor:not-allowed; }
+  .jump { display:grid; grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); gap: 7px; }
+  .jump button { border:1px solid var(--border); background:white; border-radius: 10px; padding: 8px 0; cursor:pointer; font-weight:700; }
+  .jump button.current { outline: 3px solid rgba(37,99,235,.25); border-color: var(--accent); }
+  .jump button.answered.correct { background: var(--good-bg); border-color: #34d399; }
+  .jump button.answered.incorrect { background: var(--bad-bg); border-color: #f87171; }
+  .note { background: var(--note-bg); border: 1px solid #bfdbfe; border-radius: 14px; padding: 12px; color: #1e3a8a; }
+  details { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 12px 14px; }
+  summary { cursor: pointer; font-weight: 800; }
+  .answer-key { margin-top: 12px; display: grid; gap: 10px; }
+  .keyitem { border-top:1px solid #e5e7eb; padding-top: 10px; }
+  .small { color: var(--muted); font-size: .9rem; }
+  @media print {
+    body { background:white; }
+    header, .progress-top, .question-card, .jump-panel, .no-print { display:none !important; }
+    details { display:block; border:none; }
+    details > summary { display:none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>M3Cancer1 Interactive Practice Quiz</h1>
+    <p class="subtitle">50 original multiple-choice questions generated only from the uploaded M3Cancer1.docx content.</p>
+    <div class="pillbar">
+      <span class="pill">Immediate feedback</span>
+      <span class="pill">4 answer choices each</span>
+      <span class="pill">Rationales included</span>
+      <span class="pill">Progress saved in this browser</span>
+    </div>
+  </header>
+
+  <section class="panel progress-top no-print">
+    <div class="stats">
+      <div class="stat" id="progressText">Answered 0 / 50</div>
+      <div class="stat" id="scoreText">Score 0 / 0</div>
+      <div class="small" id="percentText">0% complete</div>
+    </div>
+    <div class="bar"><div id="progressBar"></div></div>
+  </section>
+
+  <section class="panel question-card no-print">
+    <div class="qmeta" id="qmeta"></div>
+    <div class="question" id="question"></div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="navrow">
+      <button class="btn" id="prevBtn">← Previous</button>
+      <button class="btn primary" id="nextBtn">Next →</button>
+    </div>
+  </section>
+
+  <section class="panel jump-panel no-print">
+    <div class="note" style="margin-bottom:12px;">
+      Select an answer to grade that question immediately. The correct answer and rationale will appear after selection.
+    </div>
+    <div class="jump" id="jump"></div>
+    <div class="navrow">
+      <button class="btn warn" id="resetBtn">Reset quiz</button>
+      <button class="btn" onclick="window.print()">Print answer key</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <details>
+      <summary>Answer key and rationales</summary>
+      <div class="answer-key" id="answerKey"></div>
+    </details>
+  </section>
+</div>
+<script>
+const QUESTIONS = [{"q": "According to the document, what is a tumor?", "choices": ["A cancer of blood-forming tissues only", "A malignant growth that has already metastasized to distant sites", "An abnormal mass of tissue that results when cells divide more than they should or do not die when they should", "A group of abnormal cells that has not breached the basement membrane"], "answer": 2, "rationale": "The document defines a tumor as an abnormal mass of tissue caused by excessive cell division or failure of cells to die when they should; tumors can be benign or malignant."}, {"q": "How does the document define a neoplasm?", "choices": ["Any new and abnormal growth of tissue that can be benign or malignant", "A benign tumor with a fibrous capsule", "A malignant tumor arising only from epithelial cells", "A metastatic tumor that spreads through lymphatic vessels"], "answer": 0, "rationale": "The document uses neoplasm as a broad, global term for a new abnormal growth of tissue, encompassing both benign and malignant tumors."}, {"q": "Which feature best describes a benign tumor in the document?", "choices": ["Rapid growth with irregular boundaries", "Ability to spread through the bloodstream", "Poorly differentiated cells with a high mitotic index", "Non-invasive and non-metastatic, often with clear boundaries"], "answer": 3, "rationale": "Benign tumors are described as non-cancerous, non-invasive, non-metastatic, usually slow-growing, and often clearly bounded."}, {"q": "Which feature best describes a malignant tumor?", "choices": ["It remains localized and does not invade nearby tissue", "It invades nearby tissues and can metastasize", "It is usually encapsulated and well differentiated", "It grows slowly and has a low mitotic index"], "answer": 1, "rationale": "The document describes malignant tumors as cancerous growths that invade nearby tissues and can spread to other body parts."}, {"q": "According to the document, cancer refers to which process?", "choices": ["Any new and abnormal growth, whether benign or malignant", "Any non-cancerous growth that has clear boundaries", "Any malignant growth or tumor caused by abnormal, uncontrolled cell division", "Any group of dormant cells that cannot progress"], "answer": 2, "rationale": "Cancer is defined as a malignant growth or tumor resulting from uncontrolled abnormal cell division, with the ability to invade and metastasize."}, {"q": "What is contact inhibition in normal cells?", "choices": ["Normal cells grow in suspension without a solid surface", "Normal cells stop dividing when they come into contact with each other", "Normal cells evade apoptosis to extend their lifespan", "Normal cells invade nearby tissues when they encounter resistance"], "answer": 1, "rationale": "The document states that normal cells stop dividing when they come into contact with each other, a process called contact inhibition."}, {"q": "What does it mean that cancer cells can grow in suspension?", "choices": ["They require a fibrous capsule to survive", "They stop dividing when touching nearby cells", "They can only grow inside lymph nodes", "They can survive and proliferate without needing attachment to a solid surface"], "answer": 3, "rationale": "Cancer cells can grow in suspension, meaning they do not require attachment to a solid surface and may spread through body fluids."}, {"q": "How do cancer cells differ from normal cells in lifespan according to the document?", "choices": ["Cancer cells have an extended lifespan and can evade apoptosis", "Cancer cells have a shorter lifespan and die before accumulating mutations", "Cancer cells undergo apoptosis immediately when damaged", "Cancer cells cannot persist in the body"], "answer": 0, "rationale": "The document states that cancer cells have an extended lifespan and evade apoptosis, allowing genetic mutations to accumulate."}, {"q": "What does lack of differentiation, or anaplasia, mean in cancer cells?", "choices": ["Cells closely resemble normal cells in structure and function", "Cells acquire specialized function and organization", "Cells do not acquire specialized function or organization", "Cells become encapsulated and localized"], "answer": 2, "rationale": "Anaplastic cancer cells are poorly differentiated and do not perform the specialized functions typical of the tissue of origin."}, {"q": "What does pleomorphic mean in relation to cancer cells?", "choices": ["They are uniform in size and shape", "They vary in size and shape", "They are surrounded by a fibrous capsule", "They have a low rate of cell division"], "answer": 1, "rationale": "The document describes pleomorphic cancer cells as showing variability in size and shape, unlike uniform normal cells."}, {"q": "Which metabolic pattern is described as common in cancer cells?", "choices": ["Reliance on glycolysis even in the presence of oxygen", "Exclusive reliance on oxidative phosphorylation with no glycolysis", "Complete inability to synthesize lipids", "Requirement for optimal oxygen and pH conditions"], "answer": 0, "rationale": "Cancer cells often rely on glycolysis even when oxygen is present, described as aerobic glycolysis or the Warburg effect."}, {"q": "What role do cancer stem cells play according to the document?", "choices": ["They prevent tumor initiation and maintenance", "They make all tumor cells genetically identical", "They eliminate the need for angiogenesis", "They drive tumor growth, heterogeneity, persistence, and resistance to therapy"], "answer": 3, "rationale": "The document states that cancer stem cells contribute to tumor initiation, maintenance, heterogeneity, persistence, progression, and resistance to therapy."}, {"q": "Which additional factor is listed as contributing to cancer development?", "choices": ["Perfect DNA repair mechanisms", "Permanent contact inhibition", "Oncogene activation and tumor suppressor gene inactivation", "Consistent apoptosis of damaged cells"], "answer": 2, "rationale": "The document lists oncogene activation and tumor suppressor gene inactivation as common alterations that contribute to unregulated proliferation."}, {"q": "What does tumor heterogeneity refer to?", "choices": ["The presence of only one identical cancer cell population", "The presence of diverse cell populations within a single tumor", "A tumor that remains dormant and cannot progress", "A benign tumor with a well-defined capsule"], "answer": 1, "rationale": "Heterogeneity means a tumor contains diverse cell populations at genetic, phenotypic, functional, and spatial levels."}, {"q": "Which type of heterogeneity involves different regions of a tumor having distinct microenvironments?", "choices": ["Spatial heterogeneity", "Genetic heterogeneity", "Phenotypic heterogeneity", "Functional heterogeneity"], "answer": 0, "rationale": "Spatial heterogeneity refers to different tumor regions having different nutrient levels, oxygen levels, immune infiltration, or other microenvironmental features."}, {"q": "Why is cancer heterogeneity clinically important?", "choices": ["It guarantees that standard treatment eradicates all tumor cells", "It prevents subclones from adapting to treatment pressure", "It eliminates the need for personalized medicine", "It can contribute to treatment resistance, metastasis, poorer outcomes, and tumor evolution"], "answer": 3, "rationale": "The document explains that heterogeneity can support resistant subpopulations, metastatic potential, worse clinical outcomes, and tumor evolution."}, {"q": "What does the suffix '-oma' indicate in cancer nomenclature?", "choices": ["A cancer only of blood-forming tissue", "A tumor or neoplasm", "A cancer only of lymphatic tissue", "A precursor-cell malignancy only"], "answer": 1, "rationale": "The document states that '-oma' denotes a tumor or neoplasm derived from a tissue type."}, {"q": "Which nomenclature pairing matches the document?", "choices": ["Carcinoma - mesenchymal tissue; sarcoma - epithelial tissue", "Carcinoma - blood-forming cells; sarcoma - lymphatic tissue", "Carcinoma - epithelial tissue; sarcoma - mesenchymal tissue", "Carcinoma - precursor cells; sarcoma - glandular ducts"], "answer": 2, "rationale": "Carcinomas arise from epithelial cells; sarcomas arise from mesenchymal tissue such as connective tissue, muscle, and bone."}, {"q": "What does adenocarcinoma specifically indicate?", "choices": ["Cancer arising from glandular or ductal structures within epithelial tissue", "Cancer arising from blood-forming cells", "Cancer of lymphatic tissue", "Cancer derived from embryonic precursor cells"], "answer": 0, "rationale": "Adenocarcinoma refers to cancer originating from glandular or ductal structures in epithelial tissue."}, {"q": "Which statement correctly matches leukemia, lymphoma, and blastoma in the document?", "choices": ["Leukemia is lymphatic tissue cancer; lymphoma is bone cancer; blastoma is ductal cancer", "Leukemia is epithelial cancer; lymphoma is connective tissue cancer; blastoma is blood cancer", "Leukemia is a benign cartilage tumor; lymphoma is a glandular cancer; blastoma is carcinoma in situ", "Leukemia is a cancer of blood-forming cells; lymphoma is cancer of lymphatic tissue; blastoma derives from precursor cells or blasts"], "answer": 3, "rationale": "The document defines leukemia as cancer of blood-forming cells, lymphoma as cancer of lymphatic tissue, and blastoma as malignancy from precursor cells or blasts."}, {"q": "What is carcinoma in situ (CIS)?", "choices": ["Cancer cells that have spread to distant organs", "A benign tumor enclosed in a fibrous capsule", "Abnormal cells in their original location that have not breached the basement membrane", "A tumor with no atypical cells"], "answer": 2, "rationale": "CIS is pre-invasive: abnormal cells remain in their original location and have not breached the basement membrane."}, {"q": "Which path can carcinoma in situ take according to the document?", "choices": ["It can remain dormant, regress, or progress to invasive cancer", "It must always become invasive cancer", "It can only metastasize through blood vessels", "It can only be detected after distant metastasis"], "answer": 0, "rationale": "The document lists three possibilities for CIS: remain dormant, regress, or progress by breaking through the basement membrane."}, {"q": "How are oncogenes described in the document?", "choices": ["Normal genes that always inhibit cell proliferation and promote apoptosis", "Altered versions of proto-oncogenes that promote uncontrolled cell growth", "Fibrous capsules that prevent invasion", "Tumor markers found only in urine"], "answer": 1, "rationale": "Oncogenes are altered proto-oncogenes; mutations or overexpression can make them drive uncontrolled cell division."}, {"q": "Which function is attributed to oncogenes in the document?", "choices": ["They always restore contact inhibition", "They prevent genetic mutations from accumulating", "They guarantee tumor encapsulation", "They promote cell division, inhibit cell death, and disrupt differentiation"], "answer": 3, "rationale": "The document says oncogenes promote cell division, can interfere with apoptosis, and can disrupt differentiation."}, {"q": "How can inflammation contribute to cancer suppression?", "choices": ["By always promoting angiogenesis and immune suppression", "By preventing cytotoxic T cells and NK cells from recognizing cancer antigens", "By enhancing immune surveillance and inducing apoptosis in cancer cells", "By causing tumor-associated macrophages to support tumor growth"], "answer": 2, "rationale": "Inflammation may support cancer suppression through immune surveillance, tumor suppressor gene activation, and induction of apoptosis."}, {"q": "How can chronic inflammation promote cancer progression?", "choices": ["By guaranteeing regression of carcinoma in situ", "By creating a pro-tumorigenic environment with angiogenesis and immune suppression", "By permanently stopping tumor cell survival", "By preventing cytokine and growth-factor production"], "answer": 1, "rationale": "Persistent inflammation can promote tumor survival and growth, angiogenesis, immune suppression, and altered regulatory T-cell function."}, {"q": "What are paraneoplastic syndromes?", "choices": ["Disorders caused by substances produced by tumor cells or by immune responses to cancer, not by local tumor presence", "Symptoms caused only by a tumor pressing on a nearby structure", "Tumors that are always benign and encapsulated", "Screening tests used only before symptoms develop"], "answer": 0, "rationale": "The document defines paraneoplastic syndromes as rare disorders caused by tumor substances or immune responses, affecting organs beyond local tumor effects."}, {"q": "What is cachexia in the cancer document?", "choices": ["A benign growth that does not spread", "A staging code indicating no distant metastasis", "A tumor marker specific for prostate cancer", "A complex metabolic syndrome involving muscle wasting, systemic inflammation, negative protein and energy balance, and loss of lean mass"], "answer": 3, "rationale": "Cachexia is described as a complex metabolic syndrome of advanced cancer involving muscle wasting, inflammation, negative energy/protein balance, and loss of lean mass."}, {"q": "Which clinical role of cancer markers is listed in the document?", "choices": ["They are used only for final diagnosis and never for monitoring", "They can aid diagnosis, prognosis, monitoring treatment, detecting recurrence, and sometimes screening", "They replace imaging, biopsy, and other diagnostic methods", "They are always sensitive and specific enough as standalone screening tests"], "answer": 1, "rationale": "Cancer markers can help with diagnosis, prognosis, treatment monitoring, recurrence detection, and some screening, but they have limitations."}, {"q": "Alpha fetoprotein (AFP) is primarily associated with which use in the document?", "choices": ["Screening asymptomatic men for prostate cancer", "Diagnosing multiple myeloma through urine light chains", "Diagnosis and monitoring of hepatocellular carcinoma and germ cell tumors", "Assessing neuroblastoma and small cell lung cancer"], "answer": 2, "rationale": "AFP is described as a tumor marker for hepatocellular carcinoma and non-seminomatous germ cell tumors."}, {"q": "Prostate specific antigen (PSA) is primarily used for what?", "choices": ["Screening for prostate cancer and monitoring prostate cancer progression or treatment response", "Monitoring colorectal cancer recurrence only", "Assessing hereditary breast and ovarian cancer risk", "Diagnosing cancer of lymphatic tissue"], "answer": 0, "rationale": "The document states PSA is used for prostate cancer screening in asymptomatic men and monitoring disease progression and treatment response."}, {"q": "Which marker is associated with colorectal cancer treatment monitoring and recurrence detection?", "choices": ["Bence Jones protein", "Neuron-specific enolase (NSE)", "BRCA1 and BRCA2", "Carcinoembryonic antigen (CEA)"], "answer": 3, "rationale": "CEA is used for monitoring treatment response and detecting recurrence in colorectal cancer, while also being elevated in other cancers and non-cancerous conditions."}, {"q": "Bence Jones proteins are associated with which cancer?", "choices": ["Small cell lung cancer", "Hepatocellular carcinoma", "Multiple myeloma", "Prostate cancer"], "answer": 2, "rationale": "Bence Jones proteins are abnormal immunoglobulin light chains found in urine and are associated with multiple myeloma."}, {"q": "Neuron-specific enolase (NSE) can indicate which cancers according to the document?", "choices": ["Small cell lung cancer and neuroblastoma", "Breast and ovarian cancers", "Colorectal and pancreatic cancers", "Multiple myeloma and prostate cancer"], "answer": 0, "rationale": "NSE is described as elevated in small cell lung cancer and neuroblastoma, with careful interpretation needed because it can also rise in other conditions."}, {"q": "What is the role of BRCA1 and BRCA2 testing in the document?", "choices": ["To measure abnormal urine immunoglobulin light chains", "To identify mutations that increase risk of breast, ovarian, and other cancers and guide prevention or treatment decisions", "To assign the T category in TNM staging", "To detect Reed-Sternberg cells"], "answer": 1, "rationale": "BRCA1 and BRCA2 are DNA repair genes; mutations increase risk for breast, ovarian, and other cancers and inform screening, surgery, and targeted therapy."}, {"q": "What is personalized medicine in the cancer context?", "choices": ["A one-size-fits-all model for all patients with the same disease", "Treatment based only on tumor size and no molecular information", "Avoidance of cancer markers because they are not useful", "Care customized to individual genetic, environmental, and lifestyle factors"], "answer": 3, "rationale": "The document defines personalized medicine as tailoring healthcare decisions and treatments to individual genetic, environmental, and lifestyle factors."}, {"q": "In the TNM system, what does T describe?", "choices": ["Distant spread beyond nearby lymph nodes", "Primary tumor size, location, and extent of invasion into nearby tissues", "Nearby lymph node involvement", "Tumor marker level in blood"], "answer": 1, "rationale": "The T category describes the primary tumor and its size, location, and local invasion."}, {"q": "Which TNM notation indicates no distant metastasis?", "choices": ["Tis", "N1", "M0", "M1"], "answer": 2, "rationale": "M0 means no distant metastasis; M1 means distant metastasis is present."}, {"q": "Why is cancer staging important according to the document?", "choices": ["It helps treatment planning, prognosis prediction, clinical trial categorization, and monitoring response", "It is used only to name the tissue of origin", "It replaces biopsy after symptoms appear", "It is only used for benign tumors"], "answer": 0, "rationale": "The document states staging supports treatment planning, prognosis discussion, clinical trial categorization, and baseline monitoring."}, {"q": "Which statement about childhood cancers matches the document?", "choices": ["They are common and usually originate from epithelial tissue", "They are often slow-growing and rarely metastasized at diagnosis", "They have a low cure rate despite being non-aggressive", "They are relatively rare, often aggressive, and about 80% have metastasized by diagnosis"], "answer": 3, "rationale": "The document says childhood cancers are relatively rare, often fast-growing and aggressive, and around 80% have metastasized by diagnosis."}, {"q": "Which statement about adult cancer risk is consistent with the document?", "choices": ["Cancer risk decreases significantly with age", "Lifestyle choices do not contribute to cancer risk", "Accumulated genetic mutations, cellular damage, and chronic inflammation can increase cancer risk with age", "Early detection is irrelevant in adults"], "answer": 2, "rationale": "The document states that cancer risk increases with age due partly to accumulated mutations and cellular damage, with chronic inflammation also relevant."}, {"q": "What is metastatic organotropism?", "choices": ["The inability of cancer cells to spread through lymph nodes", "The tendency of cancer cells to preferentially spread to specific organs", "A benign tumor's capsule preventing invasion", "A tumor marker used in colorectal cancer"], "answer": 1, "rationale": "Metastatic organotropism refers to patterns of metastasis: cancer cells preferentially spreading to specific organs."}, {"q": "Which lung cancer type is described as highly aggressive with rapid growth and spread and paraneoplastic syndromes?", "choices": ["Small cell carcinoma of the lung", "Squamous cell carcinoma of the lung", "Adenocarcinoma of the lung", "Large cell carcinoma of the lung"], "answer": 0, "rationale": "Small cell lung carcinoma is described as highly aggressive, rapidly growing and spreading, and associated with paraneoplastic syndromes."}, {"q": "Which pairing matches the document's cancer overview table?", "choices": ["Colon cancer - HPV infection and immunosuppression; metastasis to bones only", "Esophageal cancer - polyps and APC gene; metastasis only to peritoneum", "Pancreatic cancer - cervical transformation zone; metastasis to retroperitoneal lymph nodes only", "Colon cancer - high-fat diet, low fiber, family history, IBD, smoking; metastasis to liver, lungs, peritoneum"], "answer": 3, "rationale": "The table lists colon cancer risk factors as high-fat diet, low fiber, family history, IBD, and smoking, with metastasis to liver, lungs, and peritoneum."}, {"q": "Which statement about pancreatic cancer is from the document?", "choices": ["It is caused by persistent high-risk HPV strains in the cervical transformation zone", "It usually presents as a painless testicular mass", "It presents with jaundice, weight loss, and abdominal pain and can spread rapidly from exocrine pancreas tumors", "It primarily metastasizes to retroperitoneal lymph nodes before the lungs"], "answer": 2, "rationale": "Pancreatic cancer is listed with jaundice, weight loss, abdominal pain, tumors in the exocrine pancreas, rapid spread, and metastasis to liver, lungs, and peritoneum."}, {"q": "Which pairing correctly reflects the document's female cancer material?", "choices": ["Ovarian cancer - often asymptomatic early, vague abdominal symptoms, abdominal cavity spread", "Endometrial cancer - usually caused by persistent HPV infection", "Cervical cancer - most commonly caused by unopposed estrogen exposure", "Breast cancer - originates only in ovarian stromal cells"], "answer": 0, "rationale": "The document describes ovarian cancer as often asymptomatic early, presenting with vague abdominal symptoms, and often spreading within the abdominal cavity."}, {"q": "What is central to cervical cancer pathophysiology in the document?", "choices": ["Unopposed estrogen from anovulation directly causes cervical intraepithelial neoplasia", "Persistent high-risk HPV infection can lead to dysplastic changes and eventually cancer", "BRCA2 and K-ras mutations are the primary cervical cancer mechanism", "Androgen and estrogen imbalance produces slow local invasion"], "answer": 1, "rationale": "The document states HPV infection is necessary but not sufficient; persistent infection can lead to dysplasia and cancer."}, {"q": "Which metastasis pattern matches the document's table for prostate cancer?", "choices": ["Peritoneum, diaphragm, omentum, and liver", "Retroperitoneal lymph nodes, lungs, liver, and bones", "Brain, bones, liver, and adrenal glands", "Bones, especially spine, plus liver and lungs"], "answer": 3, "rationale": "Prostate cancer metastasis is listed as bones, especially the spine, as well as liver and lungs."}, {"q": "Which statement about breast cancer matches the document?", "choices": ["It originates from germ cells and presents as a painless testicular mass", "It is primarily caused by GERD and Barrett's esophagus", "It often starts in milk ducts or lobules, and risk factors include age, BRCA mutations, hormone use, obesity, and alcohol consumption", "It has small peripheral lung tumors that metastasize early"], "answer": 2, "rationale": "The breast cancer section lists ductal/lobular origin and risk factors including age, family history/BRCA mutations, hormone therapy, obesity, alcohol, and radiation exposure."}, {"q": "How does PCOS increase risk related to endometrial cancer in the document?", "choices": ["By directly causing cancer cells to metastasize through the bloodstream", "By creating unopposed estrogen exposure from irregular ovulation, which can lead to endometrial hyperplasia", "By producing Reed-Sternberg cells in lymphatic tissue", "By causing tumors in the exocrine pancreas to spread rapidly"], "answer": 1, "rationale": "The document states PCOS does not directly cause cancer, but irregular ovulation can expose the endometrium to estrogen without progesterone balance, increasing hyperplasia and cancer risk."}];
+const STORAGE_KEY = "m3cancer1_interactive_mcq_v1";
+let state = { current: 0, answers: Array(QUESTIONS.length).fill(null) };
+try {
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+  if (saved && Array.isArray(saved.answers) && saved.answers.length === QUESTIONS.length) state = saved;
+} catch(e) {}
+
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function letter(i) { return String.fromCharCode(65+i); }
+function answeredCount() { return state.answers.filter(x => x !== null).length; }
+function correctCount() { return state.answers.reduce((n, ans, i) => n + (ans === QUESTIONS[i].answer ? 1 : 0), 0); }
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+function render() {
+  const q = QUESTIONS[state.current];
+  document.getElementById('qmeta').textContent = `Question ${state.current + 1} of ${QUESTIONS.length}`;
+  document.getElementById('question').textContent = q.q;
+  const choices = document.getElementById('choices');
+  choices.innerHTML = '';
+  const selected = state.answers[state.current];
+  q.choices.forEach((choice, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice';
+    btn.innerHTML = `<strong>${letter(idx)}.</strong> ${escapeHtml(choice)}`;
+    if (selected !== null) {
+      btn.disabled = true;
+      if (idx === q.answer) btn.classList.add('correct');
+      if (idx === selected && idx !== q.answer) btn.classList.add('incorrect');
+    }
+    btn.onclick = () => selectAnswer(idx);
+    choices.appendChild(btn);
+  });
+  renderFeedback();
+  document.getElementById('prevBtn').disabled = state.current === 0;
+  document.getElementById('nextBtn').disabled = state.current === QUESTIONS.length - 1;
+  updateProgress();
+  renderJump();
+}
+
+function selectAnswer(idx) {
+  if (state.answers[state.current] !== null) return;
+  state.answers[state.current] = idx;
+  save();
+  render();
+}
+
+function renderFeedback() {
+  const fb = document.getElementById('feedback');
+  const q = QUESTIONS[state.current];
+  const selected = state.answers[state.current];
+  if (selected === null) { fb.style.display = 'none'; fb.className = 'feedback'; fb.innerHTML = ''; return; }
+  const isCorrect = selected === q.answer;
+  fb.className = 'feedback ' + (isCorrect ? 'good' : 'bad');
+  fb.style.display = 'block';
+  fb.innerHTML = `
+    <div class="result">${isCorrect ? 'Correct' : 'Incorrect'}</div>
+    <div><strong>Your answer:</strong> ${letter(selected)}. ${escapeHtml(q.choices[selected])}</div>
+    <div><strong>Correct answer:</strong> ${letter(q.answer)}. ${escapeHtml(q.choices[q.answer])}</div>
+    <div style="margin-top:8px;"><strong>Rationale:</strong> ${escapeHtml(q.rationale)}</div>`;
+}
+
+function updateProgress() {
+  const answered = answeredCount();
+  const correct = correctCount();
+  const pct = Math.round((answered / QUESTIONS.length) * 100);
+  document.getElementById('progressText').textContent = `Answered ${answered} / ${QUESTIONS.length}`;
+  document.getElementById('scoreText').textContent = `Score ${correct} / ${answered}`;
+  document.getElementById('percentText').textContent = `${pct}% complete`;
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function renderJump() {
+  const jump = document.getElementById('jump');
+  jump.innerHTML = '';
+  QUESTIONS.forEach((q, idx) => {
+    const b = document.createElement('button');
+    b.textContent = idx + 1;
+    if (idx === state.current) b.classList.add('current');
+    const ans = state.answers[idx];
+    if (ans !== null) {
+      b.classList.add('answered');
+      b.classList.add(ans === q.answer ? 'correct' : 'incorrect');
+      b.title = ans === q.answer ? 'Answered correctly' : 'Answered incorrectly';
+    }
+    b.onclick = () => { state.current = idx; save(); render(); window.scrollTo({top:0, behavior:'smooth'}); };
+    jump.appendChild(b);
+  });
+}
+
+function renderAnswerKey() {
+  const key = document.getElementById('answerKey');
+  key.innerHTML = QUESTIONS.map((q, i) => `
+    <div class="keyitem">
+      <div><strong>${i+1}. ${escapeHtml(q.q)}</strong></div>
+      <div><strong>Answer:</strong> ${letter(q.answer)}. ${escapeHtml(q.choices[q.answer])}</div>
+      <div><strong>Rationale:</strong> ${escapeHtml(q.rationale)}</div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('prevBtn').onclick = () => { if (state.current > 0) { state.current--; save(); render(); } };
+document.getElementById('nextBtn').onclick = () => { if (state.current < QUESTIONS.length - 1) { state.current++; save(); render(); } };
+document.getElementById('resetBtn').onclick = () => {
+  if (confirm('Reset all answers and score for this quiz?')) {
+    state = { current: 0, answers: Array(QUESTIONS.length).fill(null) };
+    save();
+    render();
+  }
+};
+
+renderAnswerKey();
+render();
+</script>
+</body>
+</html>

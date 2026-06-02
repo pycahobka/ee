@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 3 Inflammation Interactive Practice Quiz</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #657086;
+      --border: #d9dee9;
+      --accent: #243b6b;
+      --accent-soft: #e8eefc;
+      --good: #0f7b3b;
+      --good-bg: #e9f7ee;
+      --bad: #b42318;
+      --bad-bg: #fdecea;
+      --warn: #8a5a00;
+      --shadow: 0 10px 30px rgba(24, 39, 75, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    header {
+      background: linear-gradient(135deg, #182747, #304f8d);
+      color: white;
+      padding: 28px 18px;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.55rem, 3vw, 2.25rem);
+      line-height: 1.15;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: rgba(255,255,255,.86);
+      font-size: 0.98rem;
+    }
+
+    main {
+      padding: 18px;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .metric {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: .82rem;
+      margin-bottom: 4px;
+    }
+
+    .metric .value {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .progress-shell {
+      background: #e5e9f2;
+      height: 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 8px 0 18px;
+      border: 1px solid var(--border);
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width .25s ease;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 250px;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .q-meta {
+      color: var(--muted);
+      font-size: .9rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .question {
+      font-size: 1.2rem;
+      font-weight: 750;
+      margin: 0 0 18px;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .option {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fff;
+      padding: 14px 14px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      transition: transform .05s ease, border-color .15s ease, background .15s ease;
+      min-height: 52px;
+    }
+
+    .option:hover:not(:disabled) {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .option:active:not(:disabled) {
+      transform: scale(.995);
+    }
+
+    .option:disabled {
+      cursor: default;
+      opacity: 1;
+    }
+
+    .letter {
+      flex: 0 0 28px;
+      height: 28px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: .86rem;
+      background: #f8f9fc;
+    }
+
+    .option.correct {
+      border-color: rgba(15, 123, 59, .45);
+      background: var(--good-bg);
+    }
+
+    .option.correct .letter {
+      background: var(--good);
+      border-color: var(--good);
+      color: #fff;
+    }
+
+    .option.incorrect {
+      border-color: rgba(180, 35, 24, .45);
+      background: var(--bad-bg);
+    }
+
+    .option.incorrect .letter {
+      background: var(--bad);
+      border-color: var(--bad);
+      color: #fff;
+    }
+
+    .feedback {
+      margin-top: 16px;
+      border-radius: 16px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      display: none;
+    }
+
+    .feedback.good {
+      display: block;
+      border-color: rgba(15, 123, 59, .35);
+      background: var(--good-bg);
+    }
+
+    .feedback.bad {
+      display: block;
+      border-color: rgba(180, 35, 24, .35);
+      background: var(--bad-bg);
+    }
+
+    .feedback-title {
+      font-weight: 850;
+      margin-bottom: 6px;
+    }
+
+    .rationale {
+      margin-top: 6px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    button.control {
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--text);
+      padding: 11px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: .95rem;
+    }
+
+    button.control.primary {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    button.control:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    aside.card {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+    }
+
+    .nav-title {
+      font-weight: 850;
+      margin-bottom: 10px;
+    }
+
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 7px;
+    }
+
+    .nav-btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 10px;
+      min-height: 38px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .nav-btn.current {
+      outline: 3px solid rgba(36, 59, 107, .25);
+      border-color: var(--accent);
+    }
+
+    .nav-btn.answered-correct {
+      background: var(--good-bg);
+      border-color: rgba(15, 123, 59, .35);
+      color: var(--good);
+    }
+
+    .nav-btn.answered-wrong {
+      background: var(--bad-bg);
+      border-color: rgba(180, 35, 24, .35);
+      color: var(--bad);
+    }
+
+    .note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    details {
+      margin-top: 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 14px 18px;
+      box-shadow: var(--shadow);
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 850;
+    }
+
+    .answer-key {
+      margin-top: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .key-item {
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+    }
+
+    .source-note {
+      font-size: .88rem;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    @media (max-width: 820px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      aside.card {
+        position: static;
+      }
+      .nav-grid {
+        grid-template-columns: repeat(10, 1fr);
+      }
+    }
+
+    @media (max-width: 520px) {
+      header {
+        padding: 22px 14px;
+      }
+      main {
+        padding: 12px;
+      }
+      .card {
+        padding: 15px;
+        border-radius: 16px;
+      }
+      .nav-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+      .option {
+        font-size: .96rem;
+        padding: 13px;
+      }
+    }
+
+    @media print {
+      header, .dashboard, .progress-shell, .layout, .controls, .source-note {
+        display: none !important;
+      }
+      body {
+        background: white;
+      }
+      details {
+        display: block;
+        box-shadow: none;
+        border: none;
+      }
+      details[open] > summary {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Module 3 Inflammation Interactive Practice Quiz</h1>
+      <p class="subtitle">50 multiple-choice questions based only on Module3Inflammation2025a.docx. Four answer choices per question. Immediate feedback and rationale after each answer.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="dashboard" aria-label="Quiz progress">
+      <div class="metric">
+        <div class="label">Progress</div>
+        <div class="value" id="progressText">0 / 50 answered</div>
+      </div>
+      <div class="metric">
+        <div class="label">Score</div>
+        <div class="value" id="scoreText">0 correct</div>
+      </div>
+      <div class="metric">
+        <div class="label">Accuracy</div>
+        <div class="value" id="accuracyText">—</div>
+      </div>
+    </section>
+
+    <div class="progress-shell" aria-hidden="true">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <section class="layout">
+      <article class="card" id="quizCard">
+        <div class="q-meta">
+          <span id="questionCounter">Question 1 of 50</span>
+          <span id="sectionLabel">Module 3 Inflammation</span>
+        </div>
+        <p class="question" id="questionText"></p>
+        <div class="options" id="options"></div>
+        <div class="feedback" id="feedback"></div>
+        <div class="controls">
+          <button class="control" id="prevBtn" type="button">Previous</button>
+          <button class="control primary" id="nextBtn" type="button">Next</button>
+          <button class="control" id="resetBtn" type="button">Reset progress</button>
+          <button class="control" id="printBtn" type="button">Print answer key</button>
+        </div>
+      </article>
+
+      <aside class="card">
+        <div class="nav-title">Question Navigator</div>
+        <div class="nav-grid" id="navGrid"></div>
+        <p class="note">Green = correct, red = incorrect. Your progress is saved in this browser.</p>
+      </aside>
+    </section>
+
+    <details id="answerKeyDetails">
+      <summary>Printable answer key and rationales</summary>
+      <div class="answer-key" id="answerKey"></div>
+    </details>
+
+    <p class="source-note">Source: Module3Inflammation2025a.docx. No outside medical facts were added.</p>
+  </main>
+
+  <script>
+    const QUESTIONS = [{"id": 1, "section": "Module 3 Inflammation", "question": "Which statement best describes the document’s overall framing of inflammation?", "options": ["Inflammation is mainly a cancer-specific process and not related to injury.", "Inflammation is always harmful and should be fully suppressed.", "Inflammation is only useful in chronic disease, not during acute infection.", "Inflammation is protective and necessary when acute, but chronic inflammation can contribute to disease."], "correct": 3, "rationale": "The document describes inflammation as a double-edged sword: acute inflammation protects against injury or infection, while chronic inflammation can damage health and contribute to disease."}, {"id": 2, "section": "Module 3 Inflammation", "question": "What is the stated goal of acute inflammation?", "options": ["To eliminate the initial cause of cell injury and initiate repair.", "To suppress all immune cell activity at the injury site.", "To create a prolonged systemic inflammatory state.", "To prevent adaptive immunity from recognizing pathogens."], "correct": 0, "rationale": "Acute inflammation is described as a rapid, localized response aimed at eliminating the initial cause of cell injury and starting the repair process."}, {"id": 3, "section": "Module 3 Inflammation", "question": "Which consequence is associated with chronic inflammation in the document?", "options": ["Immediate formation of immunological memory without tissue effects.", "Elimination of all autoimmune reactions.", "Permanent prevention of cancer risk by blocking DNA damage.", "Progressive tissue damage and fibrosis that can impair organ function."], "correct": 3, "rationale": "The document lists tissue damage and fibrosis, autoimmune disease, metabolic effects, and cancer risk as consequences of chronic inflammation."}, {"id": 4, "section": "Module 3 Inflammation", "question": "Which group contains only white blood cell types named in the immune system components section?", "options": ["Neutrophils, lymphocytes, monocytes, eosinophils, and basophils.", "Albumin, fibrinogen, collagen, elastin, and hemoglobin.", "Neurons, hepatocytes, adipocytes, keratinocytes, and chondrocytes.", "Erythrocytes, platelets, osteoblasts, fibroblasts, and endothelial cells."], "correct": 0, "rationale": "The document identifies leukocytes as primary immune cells and lists neutrophils, lymphocytes, monocytes, eosinophils, and basophils as types."}, {"id": 5, "section": "Module 3 Inflammation", "question": "What is the role of lymph nodes according to the document?", "options": ["They produce all blood cells in the center of bones.", "They transport oxygen to tissues during inflammation.", "They mature T-lymphocytes behind the breastbone.", "They filter lymph fluid and trap pathogens."], "correct": 3, "rationale": "Lymph nodes are described as small bean-shaped structures that filter lymph fluid and trap pathogens."}, {"id": 6, "section": "Module 3 Inflammation", "question": "Which pairing correctly matches an immune system component with its role?", "options": ["Spleen — producing mucus in the respiratory tract.", "Peyer’s patches — removing old red blood cells from blood.", "Thymus — development and maturation of T-lymphocytes.", "Bone marrow — filtering lymph fluid and trapping pathogens."], "correct": 2, "rationale": "The document states that the thymus, located behind the breastbone, plays a crucial role in T-cell development and maturation."}, {"id": 7, "section": "Module 3 Inflammation", "question": "Which set best reflects key roles of the immune system described in the document?", "options": ["Generate red blood cells, mineralize bone, and regulate breathing.", "Store bile, absorb fats, and regulate blood glucose.", "Protect against pathogens, isolate/remove foreign substances, and perform immune surveillance.", "Suppress all inflammation, prevent clotting, and block tissue repair."], "correct": 2, "rationale": "The document names three key roles: protection against pathogens, isolation/removal of foreign substances, and immune surveillance for abnormal or mutated cells."}, {"id": 8, "section": "Module 3 Inflammation", "question": "Which item is listed as a natural barrier in innate immune defense?", "options": ["Tumor-associated macrophages that support tumor growth.", "Cytotoxic T cells that create immunological memory.", "Antibodies produced by B cells after antigen exposure.", "Mucous membranes that trap pathogens."], "correct": 3, "rationale": "Natural barriers listed include skin, mucous membranes, ciliary activity, and cells/secretory molecules such as acidic stomach and urine environments."}, {"id": 9, "section": "Module 3 Inflammation", "question": "What does ciliary activity do in innate immune defense?", "options": ["It produces IL-10 to dampen the inflammatory cascade.", "It helps sweep mucus and trapped pathogens out of the airways.", "It forms fibrin mesh to stop bleeding at the injury site.", "It binds antigen-antibody complexes to activate the classical complement pathway."], "correct": 1, "rationale": "The document describes cilia as hair-like structures in the respiratory tract that sweep mucus and trapped pathogens out of the airways."}, {"id": 10, "section": "Module 3 Inflammation", "question": "How does the innate immune system help shape adaptive immunity?", "options": ["Innate immunity replaces the need for T cells and B cells.", "Innate immunity prevents adaptive immune cells from recognizing antigens.", "Innate immune cells present antigens to adaptive immune cells, activating and guiding specific responses.", "Innate immunity acts only after adaptive immunity has formed memory cells."], "correct": 2, "rationale": "The document states that innate immune cells present antigens to adaptive immune cells and help prime and shape the adaptive response."}, {"id": 11, "section": "Module 3 Inflammation", "question": "In Stage 1 of the inflammatory response, what do specialized immune cells recognize?", "options": ["Only collagen deposited during tissue repair.", "Danger signals such as PAMPs or DAMPs through pattern recognition receptors.", "Only oxygen carried by erythrocytes.", "Only mature antibodies released by plasma cells."], "correct": 1, "rationale": "Stage 1 is recognition and triggering, where immune cells detect PAMPs or DAMPs through PRRs."}, {"id": 12, "section": "Module 3 Inflammation", "question": "Which vascular changes are described as critical early events in inflammation?", "options": ["Loss of all plasma proteins from circulation.", "Permanent closure of capillaries and reduced blood flow.", "Vasodilation and increased vascular permeability.", "Bone marrow suppression and decreased leukocyte movement."], "correct": 2, "rationale": "The document says initial vascular changes include vasodilation and increased vascular permeability to promote immune cell influx."}, {"id": 13, "section": "Module 3 Inflammation", "question": "Which mediators are named in Stage 2 as contributing to amplification of inflammation?", "options": ["Collagen, elastin, and keratin.", "TNF-α, interleukins, and chemokines.", "Bile acids, pepsin, and amylase.", "Hemoglobin, albumin, and insulin."], "correct": 1, "rationale": "Stage 2 involves release of inflammatory mediators such as TNF-α, interleukins, and chemokines, which recruit and activate immune cells."}, {"id": 14, "section": "Module 3 Inflammation", "question": "What is a key event in Stage 3 of the inflammatory response?", "options": ["Neutrophils and macrophages engulf and destroy pathogens, debris, and foreign particles.", "Fibroblasts stop collagen deposition completely.", "TGF-β and IL-10 initiate the first danger-signal recognition step.", "Blood vessels permanently prevent immune cells from entering tissue."], "correct": 0, "rationale": "Stage 3 focuses on immune cell activation and phagocytosis by neutrophils and macrophages, while adaptive immune cells also become activated."}, {"id": 15, "section": "Module 3 Inflammation", "question": "Which mediators are identified as dampening the inflammatory cascade during resolution?", "options": ["Hemoglobin and carboxyhemoglobin.", "Transforming growth factor-beta (TGF-β) and interleukin-10.", "Bradykinin and histamine only.", "C3b and membrane attack complex only."], "correct": 1, "rationale": "Stage 4 resolution involves anti-inflammatory mediators, including TGF-β and IL-10, that dampen inflammation and promote repair."}, {"id": 16, "section": "Module 3 Inflammation", "question": "What causes the redness and heat characteristic of inflammation?", "options": ["Vasodilation triggered by mediators like histamine and prostaglandins.", "Loss of oxygen transport by all red blood cells.", "Complete inhibition of plasma protein movement.", "Reduced blood flow from permanent vessel constriction."], "correct": 0, "rationale": "The vascular response section states that vasodilation increases blood flow and creates redness and heat."}, {"id": 17, "section": "Module 3 Inflammation", "question": "What does increased vascular permeability allow during inflammation?", "options": ["Mucous membranes stop trapping pathogens.", "Adaptive immune responses are permanently blocked.", "Pathogens become unable to encounter immune cells.", "Immune cells and plasma proteins move out of the bloodstream and into tissues."], "correct": 3, "rationale": "Increased vascular permeability allows immune cells and plasma proteins to extravasate into tissues."}, {"id": 18, "section": "Module 3 Inflammation", "question": "What is the purpose of edema in the inflammatory response according to the document?", "options": ["It directly produces antibodies against specific pathogens.", "It prevents all immune cells from reaching the site of injury.", "It permanently replaces damaged tissue with bone.", "It helps dilute toxins and provides a fluid environment for immune cells to work."], "correct": 3, "rationale": "The document explains that edema results from fluid leakage and helps dilute toxins while supporting immune cell activity."}, {"id": 19, "section": "Module 3 Inflammation", "question": "Which function is part of the cell-mediated response to inflammation?", "options": ["Blocking all phagocytosis by neutrophils.", "Cytokine production to regulate inflammation and immune cell recruitment.", "Production of bile to digest dietary fat.", "Eliminating the need for tissue repair."], "correct": 1, "rationale": "The document lists phagocytosis, cytokine production, and tissue repair as cell-mediated response functions."}, {"id": 20, "section": "Module 3 Inflammation", "question": "How do plasma proteins enhance immune function during inflammation?", "options": ["They replace T cells and B cells as adaptive immune cells.", "Some act as opsonins, and complement proteins help eliminate pathogens through lysis and recruitment of inflammatory cells.", "They stop all coagulation and remove repair scaffolds.", "They prevent leukocytes from moving toward infection."], "correct": 1, "rationale": "Plasma proteins are described as enhancing immune function through opsonization, complement-mediated lysis, and recruitment of inflammatory cells."}, {"id": 21, "section": "Module 3 Inflammation", "question": "Which action occurs when mast cells degranulate?", "options": ["They become erythrocytes that transport oxygen.", "They stop vasodilation by removing all histamine.", "They convert fibrin into antibodies.", "They release preformed mediators like histamine, proteases, and cytokines."], "correct": 3, "rationale": "Mast cell degranulation releases histamine, proteases, cytokines, and newly synthesized inflammatory mediators."}, {"id": 22, "section": "Module 3 Inflammation", "question": "What does C3b do in the complement cascade?", "options": ["It matures T cells in the thymus.", "It forms mucus in the gastrointestinal tract.", "It coats pathogen surfaces to facilitate phagocytosis and clearance.", "It carries oxygen to immune cells."], "correct": 2, "rationale": "C3b is identified as the complement protein involved in opsonization, coating pathogens to improve phagocytosis."}, {"id": 23, "section": "Module 3 Inflammation", "question": "What role do C3a and C5a play in complement activity?", "options": ["They act as anaphylatoxins that promote inflammation and immune cell recruitment.", "They are red blood cell proteins that bind oxygen.", "They are anti-inflammatory mediators that always stop immune recruitment.", "They are enzymes that digest food in the GI tract."], "correct": 0, "rationale": "The document states that C3a and C5a act as anaphylatoxins, promoting recruitment and activation of immune cells."}, {"id": 24, "section": "Module 3 Inflammation", "question": "What is the membrane attack complex (MAC) described as doing?", "options": ["Preventing phagocytes from recognizing pathogens.", "Creating pores in pathogen membranes, leading to cell lysis.", "Transporting glucose into immune cells.", "Producing antibodies against all antigens."], "correct": 1, "rationale": "The MAC directly kills pathogens by forming pores in their membranes, causing lysis."}, {"id": 25, "section": "Module 3 Inflammation", "question": "Which pathway is activated by antigen-antibody complexes in the complement initiation phase?", "options": ["Classical pathway.", "Lectin pathway.", "Alternative pathway.", "Kinin pathway."], "correct": 0, "rationale": "The complement initiation phase section states that the classical pathway is activated by antigen-antibody complexes."}, {"id": 26, "section": "Module 3 Inflammation", "question": "What happens during the amplification phase of complement?", "options": ["Only red blood cells transport oxygen to tissues.", "Only T cells mature behind the breastbone.", "Only the appendix maintains gut health.", "C3 convertase forms and cleaves C3 into C3a and C3b."], "correct": 3, "rationale": "The amplification phase includes enzymatic reactions forming C3 convertase and cleaving C3 into C3a and C3b."}, {"id": 27, "section": "Module 3 Inflammation", "question": "What is the purpose of the complement cascade convergence phase?", "options": ["It prevents complement proteins from interacting with pathogens.", "It integrates different pathway activations and leads to C5 cleavage and MAC formation.", "It converts lymph nodes into bone marrow.", "It blocks all immune cell recruitment to tissue."], "correct": 1, "rationale": "The convergence phase integrates pathway activation, cleaves C5 into C5a and C5b, and leads toward MAC formation."}, {"id": 28, "section": "Module 3 Inflammation", "question": "How does the clotting cascade prevent spread to adjacent tissue?", "options": ["It forms a fibrin-, platelet-, and protein-containing mesh-like clot that contains the injury site.", "It dissolves all clots so pathogens can leave the site.", "It removes all antigens before immune cells arrive.", "It blocks macrophages and neutrophils from entering tissue."], "correct": 0, "rationale": "The clotting cascade contains the injury site by forming a mesh-like clot composed of fibrin, platelets, and other proteins."}, {"id": 29, "section": "Module 3 Inflammation", "question": "How does the clotting cascade help with antigen removal?", "options": ["It prevents antigens from staying at the injury site.", "It creates an antiviral state in neighboring cells.", "It stops all phagocytosis by monocytes and neutrophils.", "It traps antigens, pathogens, and debris so macrophages and neutrophils can remove them."], "correct": 3, "rationale": "The clotting cascade localizes antigens and debris at the site, making immune-cell access and removal easier."}, {"id": 30, "section": "Module 3 Inflammation", "question": "Which statement describes the clotting cascade’s role in healing?", "options": ["The fibrin clot provides a temporary scaffold for cell migration, extracellular matrix deposition, and repair.", "The fibrin clot permanently replaces all damaged tissue with scar before repair begins.", "The fibrin clot prevents fibroblasts from entering damaged tissue.", "The fibrin clot blocks angiogenesis during repair."], "correct": 0, "rationale": "The document describes the fibrin mesh as a framework supporting fibroblast and endothelial cell migration, extracellular matrix deposition, and healing."}, {"id": 31, "section": "Module 3 Inflammation", "question": "Which two functions are named as the major functions of the kinin cascade through bradykinin?", "options": ["Bone mineralization and hormone synthesis.", "T-cell maturation and antibody class switching.", "Oxygen transport and red cell production.", "Vasodilation and leukocyte chemotaxis."], "correct": 3, "rationale": "The document explicitly states that vasodilation and leukocyte chemotaxis are major functions of the kinin cascade through bradykinin."}, {"id": 32, "section": "Module 3 Inflammation", "question": "What does bradykinin-induced vasodilation accomplish?", "options": ["It permanently prevents plasma proteins from leaving blood vessels.", "It eliminates the need for cytokine signaling.", "It increases blood flow to deliver immune cells, nutrients, and oxygen needed for repair and immune response.", "It stops leukocytes from approaching the inflamed tissue."], "correct": 2, "rationale": "Bradykinin-driven vasodilation enhances blood flow and supports delivery of immune cells, nutrients, and oxygen to the affected area."}, {"id": 33, "section": "Module 3 Inflammation", "question": "What is leukocyte chemotaxis in the kinin cascade section?", "options": ["The process by which oxygen binds to hemoglobin.", "Attraction and migration of white blood cells toward the site of inflammation in response to chemical signals.", "The formation of red blood cells in bone marrow.", "The sealing of damaged blood vessels by platelets alone."], "correct": 1, "rationale": "Leukocyte chemotaxis is defined as leukocytes being attracted to and migrating toward inflammation in response to chemical signals."}, {"id": 34, "section": "Module 3 Inflammation", "question": "Which statement accurately describes red blood cells in the cell-mediated response section?", "options": ["They differentiate into macrophages and dendritic cells.", "They degranulate to release histamine and cytokines.", "They are not directly involved in immune responses, but oxygen transport supports immune cell metabolic needs.", "They are the main cells that perform antigen presentation."], "correct": 2, "rationale": "The document states that erythrocytes mainly transport oxygen and indirectly support immune cells during inflammation."}, {"id": 35, "section": "Module 3 Inflammation", "question": "What role do platelets play in the cell-mediated response section?", "options": ["They act as the main cells responsible for viral replication inhibition.", "They produce mucus that traps pathogens in airways.", "They help form blood clots that seal damaged vessels, control bleeding, and provide a scaffold for repair.", "They mature into T cells behind the breastbone."], "correct": 2, "rationale": "Platelets contribute to clot formation, hemostasis, vessel sealing, and a temporary scaffold for tissue repair."}, {"id": 36, "section": "Module 3 Inflammation", "question": "Which set correctly lists granulocytes named in the document?", "options": ["Macrophages, mast cells, and endothelial cells only.", "Monocytes, lymphocytes, and dendritic cells.", "Neutrophils, eosinophils, and basophils.", "Erythrocytes, platelets, and fibroblasts."], "correct": 2, "rationale": "The document identifies granulocytes as neutrophils, eosinophils, and basophils."}, {"id": 37, "section": "Module 3 Inflammation", "question": "Which statement correctly matches an immune cell with its role?", "options": ["Neutrophils primarily carry oxygen to tissues.", "Eosinophils help combat parasites and are involved in allergic reactions.", "Basophils produce all red blood cells.", "Monocytes are responsible for ciliary movement in the airways."], "correct": 1, "rationale": "The document states that eosinophils combat parasites and participate in allergic reactions."}, {"id": 38, "section": "Module 3 Inflammation", "question": "What starts the process of phagocytosis according to the document?", "options": ["Conversion of B cells into erythrocytes.", "Permanent sealing of all blood vessels before immune cells arrive.", "Chemotaxis, where chemical signals attract leukocytes to the site of infection or inflammation.", "Complete suppression of leukocyte movement."], "correct": 2, "rationale": "The phagocytosis section says chemotaxis guides immune cells to the infection or inflammation site and starts the process."}, {"id": 39, "section": "Module 3 Inflammation", "question": "What is opsonization?", "options": ["Turning mucus into antibodies.", "Making blood vessels narrower to prevent immune-cell entry.", "Stopping lysosomes from fusing with phagosomes.", "Labeling pathogens with molecules that enhance recognition and ingestion by phagocytic cells."], "correct": 3, "rationale": "Opsonization is defined as labeling pathogens so phagocytes can recognize and ingest them more effectively."}, {"id": 40, "section": "Module 3 Inflammation", "question": "What happens when a phagosome fuses with lysosomes?", "options": ["The pathogen is released unchanged into the bloodstream.", "A phagolysosome forms, where enzymes and reactive oxygen species degrade the pathogen.", "All cytokine signaling stops immediately.", "The phagocyte becomes a red blood cell."], "correct": 1, "rationale": "The document describes fusion of the phagosome and lysosome forming a phagolysosome that degrades engulfed material."}, {"id": 41, "section": "Module 3 Inflammation", "question": "How does phagocytosis relate to apoptosis in inflammation?", "options": ["Monocytes and macrophages engulf apoptotic cells and debris, supporting cleanup and resolution.", "Macrophages avoid apoptotic cells during resolution.", "Apoptosis prevents any cell debris from needing clearance.", "Phagocytosis causes all apoptotic cells to become pathogens."], "correct": 0, "rationale": "The document states that phagocytic cells such as monocytes and macrophages engulf apoptotic cells and debris, helping tissue cleanup and resolution."}, {"id": 42, "section": "Module 3 Inflammation", "question": "What are the main functions of cytokines according to the document?", "options": ["They form a chemical communication network and mediate immune responses.", "They digest fats in the intestinal lumen.", "They carry oxygen and carbon dioxide in blood.", "They form the rigid structure of chromosomes."], "correct": 0, "rationale": "The cytokine section states that cytokines are a chemical communication network and mediate immune responses."}, {"id": 43, "section": "Module 3 Inflammation", "question": "Which description of interleukins matches the document?", "options": ["They are produced only by red blood cells to carry oxygen.", "They are produced by immune cells and regulate immune cell growth, differentiation, activation, and function.", "They are clotting proteins that stop all inflammation.", "They form the membrane attack complex by themselves."], "correct": 1, "rationale": "Interleukins are described as being produced by T cells, B cells, macrophages, and dendritic cells and regulating immune cell growth, differentiation, activation, and function."}, {"id": 44, "section": "Module 3 Inflammation", "question": "Which statement best describes TNF-α in the document?", "options": ["It is mainly produced by macrophages, monocytes, and T cells and promotes inflammation, apoptosis, and immune activation.", "It is produced only by cilia and prevents leukocyte migration.", "It is a red blood cell pigment that transports oxygen.", "It is an anti-inflammatory molecule that cannot cause systemic effects."], "correct": 0, "rationale": "TNF-α is described as primarily produced by macrophages, monocytes, and T cells, with local roles in inflammation, apoptosis, and immune activation."}, {"id": 45, "section": "Module 3 Inflammation", "question": "Which statement accurately describes interferons?", "options": ["They are platelet-derived proteins that form fibrin mesh.", "They are produced in response to viral infections and help inhibit viral replication.", "They are gut-associated lymphoid tissues that trap pathogens.", "They are oxygen-carrying molecules in erythrocytes."], "correct": 1, "rationale": "The document says interferons are produced by virally infected cells, dendritic cells, and natural killer cells in response to viral infections and help inhibit viral replication."}, {"id": 46, "section": "Module 3 Inflammation", "question": "What is the local role of chemokines?", "options": ["They regulate leukocyte migration to the site of inflammation as chemoattractants.", "They produce red blood cells in bone marrow.", "They prevent all immune cells from reaching inflammation.", "They form the appendix and Peyer’s patches."], "correct": 0, "rationale": "Chemokines are described as chemoattractants that regulate leukocyte migration to inflamed sites."}, {"id": 47, "section": "Module 3 Inflammation", "question": "Which contrast between acute inflammation and cytokine storm is consistent with the document?", "options": ["Acute inflammation is localized and self-limiting, while cytokine storm is systemic, dysregulated, and uncontrolled.", "Acute inflammation causes multi-organ failure, while cytokine storm is always localized.", "Acute inflammation is harmful rather than protective, while cytokine storm restores homeostasis.", "Acute inflammation has no vascular changes, while cytokine storm only causes skin redness."], "correct": 0, "rationale": "The document contrasts acute inflammation as controlled and localized with cytokine storm as exaggerated, systemic, dysregulated, and potentially life-threatening."}, {"id": 48, "section": "Module 3 Inflammation", "question": "Which manifestation is linked to cytokine storm in the document?", "options": ["Only formation of immunological memory without tissue damage.", "Only mild localized redness with complete self-limitation.", "Fever, organ dysfunction, multi-organ failure, and life-threatening complications.", "Only mucus trapping pathogens in the respiratory tract."], "correct": 2, "rationale": "Cytokine storm is described as producing systemic inflammation, severe tissue damage, fever, organ dysfunction, multi-organ failure, and life-threatening complications."}, {"id": 49, "section": "Module 3 Inflammation", "question": "Which statement accurately reflects the chronic inflammation section?", "options": ["It has no relationship to insulin resistance, frailty, or immune dysfunction.", "It is described as always beneficial and unrelated to chronic disease.", "It is linked with damaged cells, immune dysfunction, diseases such as periodontitis/obesity/diabetes/Alzheimer’s, and influences from diet and the gut microbiome.", "It is associated only with immediate local redness and heat at an injury site."], "correct": 2, "rationale": "The chronic inflammation section links chronic inflammation to damaged cells, a weakened/dysregulated immune system, multiple chronic diseases, dietary factors, antioxidants/phytochemicals, and the gut microbiome."}, {"id": 50, "section": "Module 3 Inflammation", "question": "How does the document connect inflammation with chronic pain?", "options": ["Inflammation reduces pain by permanently raising the pain threshold.", "Chronic pain is described as unrelated to inflammatory mediators.", "Only red blood cells generate chronic pain through oxygen transport.", "Persistent low-grade inflammation and mediators such as bradykinin, prostaglandins, and cytokines can sensitize pain pathways."], "correct": 3, "rationale": "The chronic pain section says sustained inflammation and mediators such as bradykinin, prostaglandins, and cytokines sensitize nociceptors, contribute to hyperalgesia/allodynia, and help perpetuate chronic pain."}];
+    const STORAGE_KEY = "uta_5315_module3_inflammation_quiz_v1";
+    const letters = ["A", "B", "C", "D"];
+
+    let state = {
+      current: 0,
+      answers: Array(QUESTIONS.length).fill(null)
+    };
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (saved && Array.isArray(saved.answers) && saved.answers.length === QUESTIONS.length) {
+          state = saved;
+        }
+      } catch (e) {
+        console.warn("Could not load saved quiz state", e);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function answeredCount() {
+      return state.answers.filter(a => a !== null).length;
+    }
+
+    function correctCount() {
+      return state.answers.reduce((sum, ans, idx) => sum + (ans === QUESTIONS[idx].correct ? 1 : 0), 0);
+    }
+
+    function updateDashboard() {
+      const answered = answeredCount();
+      const correct = correctCount();
+      document.getElementById("progressText").textContent = `${answered} / ${QUESTIONS.length} answered`;
+      document.getElementById("scoreText").textContent = `${correct} correct`;
+      document.getElementById("accuracyText").textContent = answered ? `${Math.round((correct / answered) * 100)}%` : "—";
+      document.getElementById("progressBar").style.width = `${(answered / QUESTIONS.length) * 100}%`;
+    }
+
+    function renderQuestion() {
+      const q = QUESTIONS[state.current];
+      document.getElementById("questionCounter").textContent = `Question ${state.current + 1} of ${QUESTIONS.length}`;
+      document.getElementById("sectionLabel").textContent = q.section;
+      document.getElementById("questionText").textContent = q.question;
+
+      const selected = state.answers[state.current];
+      const optionsEl = document.getElementById("options");
+      optionsEl.innerHTML = "";
+
+      q.options.forEach((option, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "option";
+        btn.innerHTML = `<span class="letter">${letters[idx]}</span><span>${escapeHtml(option)}</span>`;
+        btn.addEventListener("click", () => answerQuestion(idx));
+
+        if (selected !== null) {
+          btn.disabled = true;
+          if (idx === q.correct) btn.classList.add("correct");
+          if (idx === selected && selected !== q.correct) btn.classList.add("incorrect");
+        }
+
+        optionsEl.appendChild(btn);
+      });
+
+      renderFeedback();
+      renderNav();
+      updateDashboard();
+
+      document.getElementById("prevBtn").disabled = state.current === 0;
+      document.getElementById("nextBtn").textContent = state.current === QUESTIONS.length - 1 ? "Finish" : "Next";
+    }
+
+    function answerQuestion(idx) {
+      if (state.answers[state.current] !== null) return;
+      state.answers[state.current] = idx;
+      saveState();
+      renderQuestion();
+    }
+
+    function renderFeedback() {
+      const q = QUESTIONS[state.current];
+      const selected = state.answers[state.current];
+      const feedback = document.getElementById("feedback");
+      feedback.className = "feedback";
+      feedback.innerHTML = "";
+
+      if (selected === null) return;
+
+      const isCorrect = selected === q.correct;
+      feedback.classList.add(isCorrect ? "good" : "bad");
+
+      const title = isCorrect ? "Correct" : "Incorrect";
+      const correctLine = `Correct answer: ${letters[q.correct]}. ${q.options[q.correct]}`;
+      feedback.innerHTML = `
+        <div class="feedback-title">${title}</div>
+        <div>${escapeHtml(correctLine)}</div>
+        <div class="rationale"><strong>Rationale:</strong> ${escapeHtml(q.rationale)}</div>
+      `;
+    }
+
+    function renderNav() {
+      const nav = document.getElementById("navGrid");
+      nav.innerHTML = "";
+      QUESTIONS.forEach((q, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "nav-btn";
+        btn.textContent = idx + 1;
+        if (idx === state.current) btn.classList.add("current");
+
+        const ans = state.answers[idx];
+        if (ans !== null) {
+          btn.classList.add(ans === q.correct ? "answered-correct" : "answered-wrong");
+        }
+
+        btn.addEventListener("click", () => {
+          state.current = idx;
+          saveState();
+          renderQuestion();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+        nav.appendChild(btn);
+      });
+    }
+
+    function renderAnswerKey() {
+      const key = document.getElementById("answerKey");
+      key.innerHTML = "";
+      QUESTIONS.forEach((q, idx) => {
+        const div = document.createElement("div");
+        div.className = "key-item";
+        div.innerHTML = `
+          <strong>${idx + 1}. ${escapeHtml(q.question)}</strong><br>
+          <span>Answer: ${letters[q.correct]}. ${escapeHtml(q.options[q.correct])}</span><br>
+          <span><em>Rationale:</em> ${escapeHtml(q.rationale)}</span>
+        `;
+        key.appendChild(div);
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      if (state.current > 0) {
+        state.current -= 1;
+        saveState();
+        renderQuestion();
+      }
+    });
+
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      if (state.current < QUESTIONS.length - 1) {
+        state.current += 1;
+        saveState();
+        renderQuestion();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        document.getElementById("answerKeyDetails").open = true;
+        document.getElementById("answerKeyDetails").scrollIntoView({ behavior: "smooth" });
+      }
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      const ok = confirm("Reset all answers and score for this quiz?");
+      if (!ok) return;
+      state = {
+        current: 0,
+        answers: Array(QUESTIONS.length).fill(null)
+      };
+      saveState();
+      renderQuestion();
+    });
+
+    document.getElementById("printBtn").addEventListener("click", () => {
+      document.getElementById("answerKeyDetails").open = true;
+      setTimeout(() => window.print(), 50);
+    });
+
+    loadState();
+    renderAnswerKey();
+    renderQuestion();
+  </script>
+</body>
+</html>
